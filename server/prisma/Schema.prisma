@@ -1,0 +1,87 @@
+// Define the Prisma schema
+
+datasource db {
+  provider = "postgresql" // Specify your database provider
+  url      = env("DATABASE_URL") // Your database URL
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Assessments {
+  id                   String    @id @default(uuid())  // UUID for the primary key
+  courseName           String
+  courseDepartment     String
+  questionsAndOptions  Json      // Store questions and options in JSON format
+  correctOption        String
+  SkillScore           SkillScore[] // Relation with SkillScore table
+}
+
+model Employee {
+  id             String  @id @default(uuid())  // UUID for the primary key
+  employeeEmail  String  @unique
+  employeeName   String
+  role           String
+  gender         String
+  password       String
+  Skillset       Skillset[]                // Relation with Skillset
+  Certification  Certification[]           // Relation with Certification
+  SkillScore     SkillScore[]              // Relation with SkillScore
+  UpdateSkillsetWithoutCertification UpdateSkillsetWithoutCertification[]
+}
+
+model Skillset {
+  id          String   @id @default(uuid())  // UUID for the primary key
+  employeeId  String   // Foreign key to Employee
+  skillSet    String[] // Array of skills
+  specialized String[] // Array of specialized skills
+  
+  Employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])  // Index for employeeId for optimization
+}
+
+model UpdateSkillsetWithoutCertification {
+  id          String  @id @default(uuid())  // UUID for the primary key
+  employeeId  String  // Foreign key to Employee
+  skill       String
+  description String
+  
+  Employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])  // Index for employeeId for optimization
+}
+
+model Certification {
+  id                String   @id @default(uuid())  // UUID for the primary key
+  employeeId        String   // Foreign key to Employee
+  courseName        String
+  certificationLink String
+  skills            String
+  courseDepartment  String
+  status            String  // Accept/Reject
+  certificationDate DateTime
+  
+  Employee          Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])  // Index for employeeId for optimization
+}
+
+model SkillScore {
+  id             String    @id @default(uuid())  // UUID for the primary key
+  employeeId     String    // Foreign key to Employee
+  assessmentId   String    // Foreign key to Assessment
+  courseName     String
+  skill          String
+  courseDepartment String
+  testName       String
+  testScore      Int
+  status         String  // Reject/Accepted
+  noOfAttempts   Int
+  
+  Employee       Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  Assessments    Assessments @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, assessmentId])  // Index for employeeId and assessmentId for optimization
+}
