@@ -1,35 +1,35 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const findUserByEmail = async (email) => {
-  return await prisma.userData.findUnique({
-    where: { email },
+const findUserByemployeeEmail = async (employeeEmail) => {
+  return await prisma.Employee.findUnique({
+    where: { employeeEmail },
   });
 };
 
 const createUser = async (user) => {
-  return await prisma.userData.create({
+  return await prisma.Employee.create({
     data: user,
   });
 };
 
 
-const FindUserForOtp = async (email) => {
+const FindUserForOtp = async (employeeEmail) => {
   try {
-    const user = await prisma.userData.findUnique({
-      where: { email: email },
+    const user = await prisma.Employee.findUnique({
+      where: { employeeEmail: employeeEmail },
     });
     return user;
   } catch (err) {
-    console.error('Error finding user by email:', err);
+    console.error('Error finding user by employeeEmail:', err);
     throw err;
   }
 };
 
-const updateUserPassword = async (email, password) => {
+const updateUserPassword = async (employeeEmail, password) => {
   try {
-    await prisma.userData.update({
-      where: { email: email },
+    await prisma.Employee.update({
+      where: { employeeEmail: employeeEmail },
       data: { password: password },
     });
     return true;
@@ -39,7 +39,7 @@ const updateUserPassword = async (email, password) => {
   }
 };
 module.exports = {
-  findUserByEmail,
+  findUserByemployeeEmail,
   createUser,
   FindUserForOtp,
   updateUserPassword
