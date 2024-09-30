@@ -33,19 +33,19 @@ const registerEmployee = async (req, res) => {
     const bcryptPassword = await bcrypt.hash(password, salt);
 
     const newEmployee = {
-     employeeEmail,
+      employeeEmail,
       employeeName,
       role,
       gender,
-      password
+      password: bcryptPassword
     };
 
     await EmployeeModel.createEmployee(newEmployee);
 
     await mailService.sendMail(
-        newEmployee,
+      employeeEmail,
       "Task Management System",
-      `${newEmployee.first_name}, Thank you for registering with us`
+      `${newEmployee.employeeEmail}, Thank you for registering with us`
   );
 
     res.json({ status: true });
@@ -58,12 +58,12 @@ const registerEmployee = async (req, res) => {
 
 const loginEmployee = async (req, res) => {
   try {
-    const { employeeEmail, password } = req.body;
-
+    const { email, password } = req.body;
+    employeeEmail = email
     console.log('Login attempt:', { employeeEmail });
 
     const Employee = await EmployeeModel.findEmployeeByemployeeEmail(employeeEmail);
-
+    console.log(Employee)
     if (!Employee) {
       console.log('Employee not found');
       return res.status(401).send("Invalid employeeEmail or Password");
@@ -78,7 +78,7 @@ const loginEmployee = async (req, res) => {
     const token = jwtgenerator(Employee.id);
     const Employee_id = Employee.id;
     const role = Employee.role;
-    const name = Employee.first_name;
+    const name = Employee.employeeName;
 
     const body = {
       token,
@@ -96,7 +96,7 @@ const loginEmployee = async (req, res) => {
 
 const otpVerify = async (req, res) => {
   try {
-    const { employeeEmail } = req.body;
+    const { employeeEmail:email } = req.body;
     const check = await EmployeeModel.FindEmployeeForOtp(employeeEmail);
     if (check) {
       const otp = randomize('0', 4);
@@ -118,14 +118,14 @@ const otpVerify = async (req, res) => {
 
 const changePassword = async (req, res) => {
   try {
-    const { employeeEmail, Password, repassword } = req.body;
-    if (Password !== repassword) {
+    const { employeeEmail, password, repassword } = req.body;
+    if (password !== repassword) {
       return res.status(401).send('Password Mismatch');
     }
 
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
-    const bcryptPassword = await bcrypt.hash(Password, salt);
+    const bcryptPassword = await bcrypt.hash(password, salt);
 
     const status = await EmployeeModel.updateEmployeePassword(employeeEmail, bcryptPassword);
     await mailService.sendMail(employeeEmail, 'Password has been changed', 'Thank you');

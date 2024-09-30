@@ -8,9 +8,10 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "client/src/components/card")));
+// app.use(express.static(path.join(__dirname, "client/src/components/card")));
 
 
+app.use("/Employee", require("./routes/EmployeeRoutes"));
 
 
 app.listen(port, () => {
