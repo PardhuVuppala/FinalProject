@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const EmployeeModel = require('../Models/EmployeeModel');
-const mailService = require('../services/RegistrationServices'); // assuming you have a mail service
+const mailService = require('../services/RegistrationServices'); 
 const jwtgenerator = require("../JwtToken/jwtgenerator");
 const Authorize = require("../middleware/authorization");
 const randomize = require('randomatic');
