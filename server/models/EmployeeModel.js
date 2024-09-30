@@ -1,46 +1,46 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const findUserByemployeeEmail = async (employeeEmail) => {
-  return await prisma.Employee.findUnique({
+const findEmployeeByemployeeEmail = async (employeeEmail) => {
+  return await prisma.employee.findUnique({
     where: { employeeEmail },
   });
 };
 
-const createUser = async (user) => {
-  return await prisma.Employee.create({
-    data: user,
+const createEmployee = async (Employee) => {
+  return await prisma.employee.create({
+    data: Employee,
   });
 };
 
 
-const FindUserForOtp = async (employeeEmail) => {
+const FindEmployeeForOtp = async (employeeEmail) => {
   try {
-    const user = await prisma.Employee.findUnique({
+    const Employee = await prisma.employee.findUnique({
       where: { employeeEmail: employeeEmail },
     });
-    return user;
+    return Employee;
   } catch (err) {
-    console.error('Error finding user by employeeEmail:', err);
+    console.error('Error finding Employee by employeeEmail:', err);
     throw err;
   }
 };
 
-const updateUserPassword = async (employeeEmail, password) => {
+const updateEmployeePassword = async (employeeEmail, password) => {
   try {
-    await prisma.Employee.update({
+    await prisma.employee.update({
       where: { employeeEmail: employeeEmail },
       data: { password: password },
     });
     return true;
   } catch (err) {
-    console.error('Error updating user password:', err);
+    console.error('Error updating Employee password:', err);
     throw err;
   }
 };
 module.exports = {
-  findUserByemployeeEmail,
-  createUser,
-  FindUserForOtp,
-  updateUserPassword
+  findEmployeeByemployeeEmail,
+  createEmployee,
+  FindEmployeeForOtp,
+  updateEmployeePassword
 };
