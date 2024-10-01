@@ -12,8 +12,8 @@ app.use(bodyparser.urlencoded({ extended: false }));
 
 
 app.use("/Employee", require("./routes/EmployeeRoutes"));
-
-
+app.use("/Assessment",require("./routes/AssessmentsRoutes"))
+app.use("/newskill", require("./routes/skillSetRoutes"))
 
 
 app.listen(port, () => {

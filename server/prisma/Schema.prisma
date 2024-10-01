@@ -14,7 +14,6 @@ model Assessments {
   courseName           String
   courseDepartment     String
   questionsAndOptions  Json      // Store questions and options in JSON format
-  correctOption        String
   SkillScore           SkillScore[] // Relation with SkillScore table
 }
 
@@ -47,6 +46,7 @@ model UpdateSkillsetWithoutCertification {
   employeeId  String  // Foreign key to Employee
   skill       String
   description String
+  status String
   
   Employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 

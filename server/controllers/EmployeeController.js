@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const EmployeeModel = require('../Models/EmployeeModel');
+const EmployeeModel = require('../models/EmployeeModel');
 const mailService = require('../services/RegistrationServices'); 
 const jwtgenerator = require("../JwtToken/jwtgenerator");
 const Authorize = require("../middleware/authorization");
@@ -44,7 +44,7 @@ const registerEmployee = async (req, res) => {
 
     await mailService.sendMail(
       employeeEmail,
-      "Task Management System",
+      "Employee Performance Rate",
       `${newEmployee.employeeEmail}, Thank you for registering with us`
   );
 
