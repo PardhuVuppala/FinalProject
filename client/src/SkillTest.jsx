@@ -47,7 +47,8 @@ export default function SKillTest() {
 
 
     // Logic to navigate to the test page or handle test-taking action
-    const handleTakeTest = (examId) => {
+    const handleTakeTest = (examId,id) => {
+        Cookies.set("SkillScoreid",id);
         // Navigate to the TestWindow page with examId in the URL
         Navigate(`/TestWindow/${examId}`);
       };  
@@ -83,7 +84,7 @@ export default function SKillTest() {
                 <td className="border border-gray-300 px-4 py-2">{exam.noOfAttempts}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <button
-                    onClick={() => handleTakeTest(exam.assessmentId)}
+                    onClick={() => handleTakeTest(exam.assessmentId,exam.id)}
                     className="bg-primary-100 text-white px-1 py-1 rounded hover:bg-gray-200 transition duration-200"
                   >
                     Take Test

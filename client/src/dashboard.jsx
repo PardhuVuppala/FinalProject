@@ -70,20 +70,20 @@ function dashboard() {
   const RequestSubmit = async(e)=>
   {     
          
-    // data ={
-    //   employeeId: Cookies.get('Employee_id'),
-    //   skill: skill,
-    //   description: description,
-    //   status: 'pending',
-    // }
-    e.preventDefault()
 
-     const data ={
-        employeeId: Cookies.get('Employee_id'),
-        skill: 'Node',
-        description: 'Backend development',
-        status: 'pending',
-      }
+    e.preventDefault()
+      const data ={
+      employeeId: Cookies.get('Employee_id'),
+      skill: skill,
+      description: description,
+      status: 'pending',
+    }
+    //  const data ={
+    //     employeeId: Cookies.get('Employee_id'),
+    //     skill: 'Node',
+    //     description: 'Backend development',
+    //     status: 'pending',
+    //   }
       try {
         const response = await axios.post('http://localhost:1200/newskill/skillsets', data);
         console.log('Skillset created:', response.data);

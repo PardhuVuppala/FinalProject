@@ -29,7 +29,7 @@ const createSkillset = async (req, res) => {
       courseName: assessment.courseName,
       skill,
       courseDepartment: assessment.courseDepartment,
-      testName: 'Default Test Name', // Set based on your logic
+      testName: skill, // Set based on your logic
       testScore: 0, // Default score or calculated value
       status,
       noOfAttempts: 1, // Default or calculated attempts
