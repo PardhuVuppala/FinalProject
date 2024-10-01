@@ -18,7 +18,17 @@ const findAssessmentByCourseName = async ({ where: { courseName: skill } }) => {
   });
 };
 
+
+const findAssessmentById = async (assessmentId) => {
+  return await prisma.assessments.findUnique({
+    where: {
+      id: assessmentId,
+    },
+  });
+};
+
 module.exports = {
   createAssessment,
-  findAssessmentByCourseName
+  findAssessmentByCourseName,
+  findAssessmentById
 };

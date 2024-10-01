@@ -7,6 +7,8 @@ const assessmentController= require('../controllers/assessmentController');
 
 router.post('/assessment', assessmentController.addAssessment);
 
+router.get('/assessment/:assessmentId', assessmentController.getAssessmentById);
+
 
 
 module.exports = router;

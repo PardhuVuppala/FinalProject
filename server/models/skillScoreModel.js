@@ -7,6 +7,17 @@ const createSkillScore = async (data) => {
   });
 };
 
+// Function to get skill scores by employeeId
+const findSkillScoresByEmployeeId = async (employeeId) => {
+  return await prisma.skillScore.findMany({
+    where: { employeeId },
+    include: {
+      Assessments: true, // Include assessment details if needed
+    },
+  });
+};
+
 module.exports = {
   createSkillScore,
+  findSkillScoresByEmployeeId
 };

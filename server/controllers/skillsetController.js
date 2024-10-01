@@ -65,6 +65,25 @@ const getSkillsetsByEmployeeId = async (req, res) => {
 
 
 
+const getSkillScoresByEmployeeId = async (req, res) => {
+  const { employeeId } = req.params; // Assuming employeeId is passed as a URL parameter
+
+  try {
+    const skillScores = await skillScoreModel.findSkillScoresByEmployeeId(employeeId);
+
+    if (skillScores.length === 0) {
+      return res.status(404).json({ message: 'No skill scores found for this employee.' });
+    }
+
+    res.status(200).json(skillScores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching skill scores', error: error.message });
+  }
+};
+
+
+
 
 // Update skillset
 const updateSkillset = async (req, res) => {
@@ -105,4 +124,5 @@ module.exports = {
   getSkillsetsByEmployeeId,
   updateSkillset,
   deleteSkillset,
+  getSkillScoresByEmployeeId
 };
