@@ -17,6 +17,7 @@ const updateSkillScore = async (req, res) => {
       data: {
         assessmentId,
         testScore,
+        noOfAttempts:0
       },
     });
 

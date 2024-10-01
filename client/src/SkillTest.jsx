@@ -75,29 +75,34 @@ export default function SKillTest() {
           </tr>
         </thead>
         <tbody>
-          {examDetails.length > 0 ? (
-            examDetails.map((exam) => (
-              <tr key={exam.id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-4 py-2">{exam.testName}</td>
-                <td className="border border-gray-300 px-4 py-2">{exam.testScore}</td>
-                <td className="border border-gray-300 px-4 py-2">{exam.status}</td>
-                <td className="border border-gray-300 px-4 py-2">{exam.noOfAttempts}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    onClick={() => handleTakeTest(exam.assessmentId,exam.id)}
-                    className="bg-primary-100 text-white px-1 py-1 rounded hover:bg-gray-200 transition duration-200"
-                  >
-                    Take Test
-                  </button>
-                </td>
-              </tr>
-            ))
+  {examDetails.length > 0 ? (
+    examDetails.map((exam) => (
+      <tr key={exam.id} className="hover:bg-gray-50">
+        <td className="border border-gray-300 px-4 py-2">{exam.testName}</td>
+        <td className="border border-gray-300 px-4 py-2">{exam.testScore}</td>
+        <td className="border border-gray-300 px-4 py-2">{exam.status}</td>
+        <td className="border border-gray-300 px-4 py-2">{exam.noOfAttempts}</td>
+        <td className="border border-gray-300 px-4 py-2">
+          {exam.noOfAttempts === 0 ? (
+            <span className="text-gray-500">Test Attempted</span>
           ) : (
-            <tr>
-              <td colSpan="5" className="border border-gray-300 px-4 py-2 text-center">No exam details found.</td>
-            </tr>
+            <button
+              onClick={() => handleTakeTest(exam.assessmentId, exam.id)}
+              className="bg-primary-100 text-white px-1 py-1 rounded hover:bg-gray-200 transition duration-200"
+            >
+              Take Test
+            </button>
           )}
-        </tbody>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="5" className="border border-gray-300 px-4 py-2 text-center">No exam details found.</td>
+    </tr>
+  )}
+</tbody>
+
       </table>
     </div>
       </div>

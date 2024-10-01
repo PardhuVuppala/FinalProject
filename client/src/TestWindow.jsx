@@ -52,8 +52,8 @@ const TestWindow = () => {
     
     const correctAnswersCount = newResults.filter(result => result.isCorrect).length;
     setScore(correctAnswersCount * 5); 
-    console.log(score)
-    const updatedScorce = score
+    console.log(correctAnswersCount*5)
+    const updatedScorce = correctAnswersCount*5
     try {
      
         await axios.post('http://localhost:1200/skillScore/update', {
