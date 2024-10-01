@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from "js-cookie";
+
 
 const TestWindow = () => {
   const { examId } = useParams();
@@ -34,7 +36,7 @@ const TestWindow = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     const newResults = questions.map((question, index) => {
       const correctAnswer = question.Answer;
       const userAnswer = selectedAnswers[index] || '';
@@ -44,12 +46,26 @@ const TestWindow = () => {
         userAnswer,
         isCorrect: correctAnswer === userAnswer,
       };
+
     });
     setResults(newResults);
     
-    // Calculate score
     const correctAnswersCount = newResults.filter(result => result.isCorrect).length;
-    setScore(correctAnswersCount * 5); // 5 marks for each correct answer
+    setScore(correctAnswersCount * 5); 
+    console.log(score)
+    const updatedScorce = score
+    try {
+     
+        await axios.post('http://localhost:1200/skillScore/update', {
+          id:Cookies.get('SkillScoreid'),
+          assessmentId:examId,
+          testScore: updatedScorce,
+        });
+        console.log('Score updated successfully');
+      } catch (error) {
+        console.error('Error updating score:', error);
+        setError('Failed to update score. Please try again later.');
+      }
   };
 
   if (loading) return <p className="text-center">Loading questions...</p>;
