@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 function dashboard() {
   const Navigate = useNavigate();
   const[NewRequest, setNewRequest] = useState(false)
+  const[RequestWithoutCertification, setRequestWithoutCertification] = useState(false)
+  const[RequestWithCertification,setRequestWithCertification]=useState(false)
   const[skill,setskill] = useState("")
   const[description,setdescription] = useState("")
   const [skillsets, setSkillsets] = useState([]);
@@ -79,6 +81,24 @@ function dashboard() {
     setNewRequest(!NewRequest)
    }
     
+
+   const WithoutCertificationSkillRequest=()=>
+   {
+    setRequestWithoutCertification(!RequestWithoutCertification);
+    if(NewRequest!=false)
+    {
+    setNewRequest(!NewRequest);
+    }
+   }
+
+   const CertificationSkillRequest=()=>
+   {
+    setRequestWithCertification(!RequestWithCertification);
+    if(NewRequest!=false)
+      {
+      setNewRequest(!NewRequest);
+      }
+   }
    
 
 
@@ -145,8 +165,7 @@ function dashboard() {
  
         setskill("");
         setdescription("");
-        setNewRequest(!NewRequest)
-
+        setRequestWithoutCertification(!RequestWithoutCertification);
   }
 
 
@@ -189,11 +208,144 @@ if(role==="user"){
         <p>No skillsets found for this employee.</p>
       )}
     </div>
+    {/* Request with certification */}
+    {RequestWithCertification && (
+        <div
+          id="authentication-modal"
+          tabIndex="-1"
+          aria-hidden="true"
+          className="fixed inset-0 z-50 overflow-y-auto  bg-opacity-80 flex justify-center items-center"
+        >
+          <div className="relative p-0 w-1/4 max-w-3xl">
+            <div className="relative flex flex-col md:flex-row space-y-2 md:space-y-0 shadow-2xl rounded-2xl">
+              <div className="p-4 md:p-10 flex-grow bg-white shadow-2xl rounded-2xl">
+                <button
+                  onClick={CertificationSkillRequest}
+                  type="button"
+                  className="end-2.5 text-gray-400 bg-transparent hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" style={{border:"0px"}}  >
+                <div className="flex items-center">
+                    <svg
+                        className="w-3 h-3"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 1L3 7l6 6"
+                        />
+                    </svg>
+                    <span className="ml-1.5">back</span>
+                </div>
+
+                </button>
+                <div class="relative">
+                <form class="space-y-4 mt-5" onSubmit={RequestSubmit}>
+
+                    
+                    <div>
+                    <span className='mb-2 text-md'>Certification Name</span>
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
+                    </div>
+
+                    <div>
+                    <span className='mb-2 text-md'>Skill</span>
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
+                    </div>
+
+                    <div>
+                    <span className='mb-2 text-md'>Image Link</span>
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
+                    </div>
+              
+              
+                    <div>
+                    <span className='mb-2 text-md'>Description</span>
+                    <textarea type="text" name="description" id="description" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={description} onChange={(e)=>setdescription(e.target.value)}    />
+                    </div>
+                    <button type="submit" className="w-full bg-primary-100 text-white py-2 px-2 rounded-lg mb-2 hover:border-gray-300 mt-2" >Submit Request</button>
+                  
+                </form>
+            </div>
+             </div>
+            
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+
+
+   {/* Request without Certification */}
       
+      {RequestWithoutCertification && (
+        <div
+          id="authentication-modal"
+          tabIndex="-1"
+          aria-hidden="true"
+          className="fixed inset-0 z-50 overflow-y-auto  bg-opacity-80 flex justify-center items-center"
+        >
+          <div className="relative p-0 w-1/4 max-w-3xl">
+            <div className="relative flex flex-col md:flex-row space-y-2 md:space-y-0 shadow-2xl rounded-2xl">
+              <div className="p-4 md:p-10 flex-grow bg-white shadow-2xl rounded-2xl">
+                <button
+                  onClick={WithoutCertificationSkillRequest}
+                  type="button"
+                  className="end-2.5 text-gray-400 bg-transparent hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" style={{border:"0px"}}  >
+                <div className="flex items-center">
+                    <svg
+                        className="w-3 h-3"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 1L3 7l6 6"
+                        />
+                    </svg>
+                    <span className="ml-1.5">back</span>
+                </div>
 
+                </button>
+                <div class="relative">
+                <form class="space-y-4 mt-5" onSubmit={RequestSubmit}>
 
-      {/* floating Button Model */}
-      {NewRequest && (
+                 
+
+                    <div>
+                    <span className='mb-2 text-md'>Skill</span>
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
+                    </div>
+      
+                    <div>
+                    <span className='mb-2 text-md'>Description</span>
+                    <textarea type="text" name="description" id="description" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={description} onChange={(e)=>setdescription(e.target.value)}    />
+                    </div>
+                    <button type="submit" className="w-full bg-primary-100 text-white py-2 px-2 rounded-lg mb-2 hover:border-gray-300 mt-2" >Submit Request</button>
+                  
+                </form>
+            </div>
+             </div>
+            
+            </div>
+          </div>
+        </div>
+      )}
+
+{/* floating request */}
+{NewRequest && (
         <div
           id="authentication-modal"
           tabIndex="-1"
@@ -227,31 +379,23 @@ if(role==="user"){
                 </div>
 
                 </button>
-                <div class="relative">
-                <form class="space-y-4 mt-5" onSubmit={RequestSubmit}>
-
-                  {/* Skill Selection */}
-
-                    <div>
-                    <span className='mb-2 text-md'>Skill</span>
-                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
-                    </div>
-      
-                  {/* Description */}
-                    <div>
-                    <span className='mb-2 text-md'>Description</span>
-                    <textarea type="text" name="description" id="description" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={description} onChange={(e)=>setdescription(e.target.value)}    />
-                    </div>
-                    <button type="submit" className="w-full bg-primary-100 text-white py-2 px-2 rounded-lg mb-2 hover:border-gray-300 mt-2" >Submit Request</button>
-                  
-                </form>
-            </div>
+                <div class="flex justify-center mt-2 space-x-4">
+    <button type="submit" onClick={CertificationSkillRequest} class="w-1/2 bg-primary-100 text-white py-2 px-2 rounded-lg mb-2 hover:border-gray-300 mt-2">
+        Skill Updation with Certification
+    </button>
+    <button type="submit" onClick={WithoutCertificationSkillRequest}class="w-1/2 bg-primary-100 text-white py-2 px-2 rounded-lg mb-2 hover:border-gray-300 mt-2">
+        Skill Updation without Certification
+    </button>
+</div>
              </div>
             
             </div>
           </div>
         </div>
       )}
+
+
+      
 
   {/* floating Button */}
     <div className="fixed bottom-5 right-5 z-[1000]">
@@ -302,82 +446,79 @@ else if(role==="admin")
       <div className=" h-full">
       {/* displaying request */}
      
-      <div className="container mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center text-indigo-700">Skill Score Details</h1>
-      <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
-        <thead className="bg-indigo-50">
-          <tr>
-            <th className="py-4 px-6 border-b font-semibold text-gray-700">Course Name</th>
-            <th className="py-4 px-6 border-b font-semibold text-gray-700">Skill</th>
-            <th className="py-4 px-6 border-b font-semibold text-gray-700">Test Score</th>
-            <th className="py-4 px-6 border-b font-semibold text-gray-700">No of Attempts</th>
-            <th className="py-4 px-6 border-b font-semibold text-gray-700">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {skillScores.map((score) => (
-            <tr key={score.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
-              <td className="py-4 px-6 border-b text-gray-800">{score.courseName}</td>
-              <td className="py-4 px-6 border-b text-gray-800">{score.skill}</td>
-              <td className="py-4 px-6 border-b text-gray-800">
-                {score.testScore === 0 && score.noOfAttempts > 0 ? (
-                  <span className="text-red-500 italic">Test is not attempted</span>
-                ) : (
-                  score.testScore
-                )}
-              </td>
-              <td className="py-4 px-6 border-b text-gray-800">{score.noOfAttempts}</td>
-              <td className="py-4 px-6 border-b text-gray-800">
-              {score.status === "Accepted" || score.status === "Rejected" ? (
-    <span className={`font-semibold ${score.status === 'Accepted' ? 'text-green-500' : 'text-red-500'}`}>
-      {score.status}
-    </span>
-  ) : (
-    <>
-      {score.noOfAttempts === 0 ? (
-        <>
-          <button
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mr-2 transition duration-200 ease-in-out"
-            onClick={() => handleAccept(score.id)}
-          >
-            Accept
-          </button>
-          <button
-            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
-            onClick={() => handleReject(score.id)}
-          >
-            Reject
-          </button>
-        </>
-      ) : (
-        <>
-          <p className="text-gray-500 italic">User has to attempt the test</p>
-          <button 
-            className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed"
-            disabled
-          >
-            Accept
-          </button>
-          <button 
-            className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed ml-2"
-            disabled
-          >
-            Reject
-          </button>
-        </>
-      )}
-    </>
-  )}
+            <div className="container mx-auto p-6">
+            <h1 className="text-4xl font-bold mb-8 text-center text-indigo-700">Skill Score Details</h1>
+            <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
+              <thead className="bg-indigo-50">
+                <tr>
+                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Course Name</th>
+                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Skill</th>
+                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Test Score</th>
+                  <th className="py-4 px-6 border-b font-semibold text-gray-700">No of Attempts</th>
+                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {skillScores.map((score) => (
+                  <tr key={score.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
+                    <td className="py-4 px-6 border-b text-gray-800">{score.courseName}</td>
+                    <td className="py-4 px-6 border-b text-gray-800">{score.skill}</td>
+                    <td className="py-4 px-6 border-b text-gray-800">
+                      {score.testScore === 0 && score.noOfAttempts > 0 ? (
+                        <span className="text-red-500 italic">Test is not attempted</span>
+                      ) : (
+                        score.testScore
+                      )}
+                    </td>
+                    <td className="py-4 px-6 border-b text-gray-800">{score.noOfAttempts}</td>
+                    <td className="py-4 px-6 border-b text-gray-800">
+                    {score.status === "Accepted" || score.status === "Rejected" ? (
+          <span className={`font-semibold ${score.status === 'Accepted' ? 'text-green-500' : 'text-red-500'}`}>
+            {score.status}
+          </span>
+        ) : (
+          <>
+            {score.noOfAttempts === 0 ? (
+              <>
+                <button
+                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mr-2 transition duration-200 ease-in-out"
+                  onClick={() => handleAccept(score.id)}
+                >
+                  Accept
+                </button>
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
+                  onClick={() => handleReject(score.id)}
+                >
+                  Reject
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-500 italic">User has to attempt the test</p>
+                <button 
+                  className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed"
+                  disabled
+                >
+                  Accept
+                </button>
+                <button 
+                  className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed ml-2"
+                  disabled
+                >
+                  Reject
+                </button>
+              </>
+            )}
+          </>
+        )}
 
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-
-
-      
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>      
         </div>
        </div>
       </div>
