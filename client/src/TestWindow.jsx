@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from "js-cookie";
 
-
 const TestWindow = () => {
   const { examId } = useParams();
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [results, setResults] = useState(null);
   const [score, setScore] = useState(0);
+  const [countdown, setCountdown] = useState(10); // Timer countdown state
 
   useEffect(() => {
     const fetchExamQuestions = async () => {
@@ -36,7 +37,7 @@ const TestWindow = () => {
     });
   };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async () => {
     const newResults = questions.map((question, index) => {
       const correctAnswer = question.Answer;
       const userAnswer = selectedAnswers[index] || '';
@@ -46,26 +47,39 @@ const TestWindow = () => {
         userAnswer,
         isCorrect: correctAnswer === userAnswer,
       };
-
     });
     setResults(newResults);
-    
+
     const correctAnswersCount = newResults.filter(result => result.isCorrect).length;
-    setScore(correctAnswersCount * 5); 
-    console.log(correctAnswersCount*5)
-    const updatedScorce = correctAnswersCount*5
+    const updatedScore = correctAnswersCount * 5;
+    setScore(updatedScore);
+
     try {
-     
-        await axios.post('http://localhost:1200/skillScore/update', {
-          id:Cookies.get('SkillScoreid'),
-          assessmentId:examId,
-          testScore: updatedScorce,
-        });
-        console.log('Score updated successfully');
-      } catch (error) {
-        console.error('Error updating score:', error);
-        setError('Failed to update score. Please try again later.');
-      }
+      await axios.post('http://localhost:1200/skillScore/update', {
+        id: Cookies.get('SkillScoreid'),
+        assessmentId: examId,
+        testScore: updatedScore,
+      });
+      console.log('Score updated successfully');
+    } catch (error) {
+      console.error('Error updating score:', error);
+      setError('Failed to update score. Please try again later.');
+    }
+
+    // Start the countdown after submitting
+    startCountdown();
+  };
+
+  const startCountdown = () => {
+    const countdownInterval = setInterval(() => {
+      setCountdown(prevCountdown => {
+        if (prevCountdown === 1) {
+          clearInterval(countdownInterval);
+          navigate('/SkillTest'); // Auto navigate after 10 seconds
+        }
+        return prevCountdown - 1;
+      });
+    }, 1000);
   };
 
   if (loading) return <p className="text-center">Loading questions...</p>;
@@ -131,6 +145,17 @@ const TestWindow = () => {
           ))}
           <div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
             <h3 className="text-lg font-bold">Your Total Score: {score} / {questions.length * 5}</h3>
+          </div>
+
+          {/* Display the button and countdown */}
+          <div className="mt-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
+            <button
+              onClick={() => navigate('/SkillTest')}
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
+            >
+              View Tests
+            </button>
+            <p className="mt-2 text-gray-500">Redirecting in {countdown} seconds...</p>
           </div>
         </div>
       )}

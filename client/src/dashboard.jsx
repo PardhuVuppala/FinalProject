@@ -13,12 +13,16 @@ function dashboard() {
   const[skill,setskill] = useState("")
   const[description,setdescription] = useState("")
   const [skillsets, setSkillsets] = useState([]);
+  const[role,setRole]=useState("")
+  const [skillScores, setSkillScores] = useState([]);
 
 
+   
   useEffect(() => {
     const token = Cookies.get("token");
-    const Employee_id = Cookies.get('Employee_id')
-  
+    const role = Cookies.get("role");
+    const Employee_id = Cookies.get('Employee_id');
+    setRole(role);
     //token verifucation
     const verifyToken = async () => {
       try {
@@ -35,7 +39,10 @@ function dashboard() {
       }
     };
     
-    //getSkillsetsrequests
+
+    
+     //user requests
+    //getSkillsetsrequests for particular user
     const getSkillsetsrequests = async (employeeId) => {
       try {
         const response = await axios.get(`http://localhost:1200/newskill/skillsets/${employeeId}`);
@@ -47,8 +54,18 @@ function dashboard() {
     };
 
 
-  
+    //Fetch skill to display for Admin
+    const fetchSkillScores = async () => {
+      try {
+        const response = await axios.get('http://localhost:1200/skillScore/details');
+        setSkillScores(response.data);
+      } catch (error) {
+        console.error('Error fetching SkillScores:', error);
+      }
+    };
+
     verifyToken();
+    fetchSkillScores();
     getSkillsetsrequests(Employee_id);
   }, []);
 
@@ -61,8 +78,42 @@ function dashboard() {
    {
     setNewRequest(!NewRequest)
    }
- 
+    
    
+
+
+   //admin api requests
+
+
+   const handleAccept = async (id) => {
+    try {
+      await axios.put(`http://localhost:1200/skillScore/update/${id}`, {
+        status: 'Accepted'
+      });
+      // Update the local state after acceptance
+      setSkillScores((prevScores) =>
+        prevScores.map((score) => (score.id === id ? { ...score, status: 'Accepted' } : score))
+      );
+    } catch (error) {
+      console.error('Error accepting the user:', error);
+    }
+  };
+
+
+
+  const handleReject = async (id) => {
+    try {
+      await axios.put(`http://localhost:1200/skillScore/update/${id}`, {
+        status: 'Rejected'
+      });
+      // Update the local state after rejection
+      setSkillScores((prevScores) =>
+        prevScores.map((score) => (score.id === id ? { ...score, status: 'Rejected' } : score))
+      );
+    } catch (error) {
+      console.error('Error rejecting the user:', error);
+    }
+  };
 
 
 
@@ -100,7 +151,7 @@ function dashboard() {
 
 
 
-
+if(role==="user"){
   return (
     <div className='flex'>
     <Sidebar className="w-1/3" />
@@ -232,5 +283,108 @@ function dashboard() {
     </div>
   );
 }
+
+
+
+
+//admin dashboard
+else if(role==="admin")
+{
+  return (
+    <div className='flex'>
+    <Sidebar className="w-1/3" />
+    <div className="flex-1 p-4 grid grid-cols-3 gap-4">
+      <div className="bg-gray-200 p-4 rounded shadow">01</div>
+      <div className="bg-gray-200 p-4 rounded shadow">05</div>
+      <div className="bg-gray-200 p-4 rounded shadow">05</div>
+      
+      <div className=" bg-gray-200 p-4 rounded shadow col-span-3 row-span-5">
+      <div className=" h-full">
+      {/* displaying request */}
+     
+      <div className="container mx-auto p-6">
+      <h1 className="text-4xl font-bold mb-8 text-center text-indigo-700">Skill Score Details</h1>
+      <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
+        <thead className="bg-indigo-50">
+          <tr>
+            <th className="py-4 px-6 border-b font-semibold text-gray-700">Course Name</th>
+            <th className="py-4 px-6 border-b font-semibold text-gray-700">Skill</th>
+            <th className="py-4 px-6 border-b font-semibold text-gray-700">Test Score</th>
+            <th className="py-4 px-6 border-b font-semibold text-gray-700">No of Attempts</th>
+            <th className="py-4 px-6 border-b font-semibold text-gray-700">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {skillScores.map((score) => (
+            <tr key={score.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
+              <td className="py-4 px-6 border-b text-gray-800">{score.courseName}</td>
+              <td className="py-4 px-6 border-b text-gray-800">{score.skill}</td>
+              <td className="py-4 px-6 border-b text-gray-800">
+                {score.testScore === 0 && score.noOfAttempts > 0 ? (
+                  <span className="text-red-500 italic">Test is not attempted</span>
+                ) : (
+                  score.testScore
+                )}
+              </td>
+              <td className="py-4 px-6 border-b text-gray-800">{score.noOfAttempts}</td>
+              <td className="py-4 px-6 border-b text-gray-800">
+              {score.status === "Accepted" || score.status === "Rejected" ? (
+    <span className={`font-semibold ${score.status === 'Accepted' ? 'text-green-500' : 'text-red-500'}`}>
+      {score.status}
+    </span>
+  ) : (
+    <>
+      {score.noOfAttempts === 0 ? (
+        <>
+          <button
+            className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mr-2 transition duration-200 ease-in-out"
+            onClick={() => handleAccept(score.id)}
+          >
+            Accept
+          </button>
+          <button
+            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
+            onClick={() => handleReject(score.id)}
+          >
+            Reject
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="text-gray-500 italic">User has to attempt the test</p>
+          <button 
+            className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed"
+            disabled
+          >
+            Accept
+          </button>
+          <button 
+            className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed ml-2"
+            disabled
+          >
+            Reject
+          </button>
+        </>
+      )}
+    </>
+  )}
+
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+
+      
+        </div>
+       </div>
+      </div>
+    </div>
+  );
+}
+}
+
 
 export default dashboard;
