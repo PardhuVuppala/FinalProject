@@ -35,6 +35,9 @@ export default function CertificationData() {
     }
   };
 
+
+  
+
   // Function to open the image popup
   const openImagePopup = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -107,7 +110,7 @@ export default function CertificationData() {
                         Accept
                       </button>
                       <button
-                        onClick={() => handleStatusChange(certification.id, 'rejected')}
+                        onClick={() => handleStatusChange(certification.id, certification.employeeId, certification.skills, certification.courseDepartment, 'rejected')}
                         className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition-colors duration-200"
                       >
                         Reject
@@ -126,18 +129,23 @@ export default function CertificationData() {
 
     {/* Image Popup Modal */}
     {selectedImage && (
-      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div className="p-4 rounded shadow-lg relative">
-          <button
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-            onClick={closePopup}
-          >
-            &times; {/* Close button */}
-          </button>
-          <img src={selectedImage} alt="Certification" className="max-w-full max-h-full" />
-        </div>
-      </div>
-    )}
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div className="p-4 rounded shadow-lg relative">
+      <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+        onClick={closePopup}
+      >
+        &times; 
+      </button>
+      <img
+        src={selectedImage}
+        alt="Certification"
+        className="max-w-[400px] max-h-[400px]" 
+      />
+    </div>
+  </div>
+)}
+
   </div>
 </div>
 
