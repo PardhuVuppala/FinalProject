@@ -16,6 +16,8 @@ app.use("/Assessment",require("./routes/AssessmentsRoutes"))
 app.use("/newskill", require("./routes/skillSetRoutes"))
 app.use("/skillScore", require("./routes/skillScoreRoute"))
 app.use("/certificate",require("./routes/certificationRoutes"))
+app.use("/skill",require("./routes/SkillSetEmployee"))
+
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

@@ -5,6 +5,9 @@ import Sidebar from './UI Components/sidebar';
 // import ProjectDetailsList from './UI components/ProjectDetailsList';
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBuilding } from '@fortawesome/free-solid-svg-icons';
 
 
 function dashboard() {
@@ -23,6 +26,7 @@ function dashboard() {
   const[cdescription,setcdescription] = useState("");
   const[courseDepartment,setcourseDepartment] = useState("")
   const [certifications, setCertifications] = useState([]);
+  const [data, setData] = useState([]);
 
 
    
@@ -46,9 +50,7 @@ function dashboard() {
         Navigate("/");
       }
     };
-    
 
-    
      //user requests
     //getSkillsetsrequests for particular user
     const getSkillsetsrequests = async (employeeId) => {
@@ -92,14 +94,35 @@ function dashboard() {
         console.error('Error fetching SkillScores:', error);
       }
     };
-    
+    const fetchSkillSet = async (employeeId) => {
+      try {
+        const response = await axios.get(`http://localhost:1200/skill/skillset/${employeeId}`);
+        setData(response.data);
+      } catch (error) {
+        notify('Error fetching skill set data.');
+        console.error('Error fetching skill set data:', error);
+      } 
+    };
+
+   
     verifyToken();
     fetchSkillScores();
     getSkillsetsrequests(Employee_id);
     getCertificationsByEmployeeId();
+    fetchSkillSet(Employee_id);
+    
   }, []);
 
-
+  const groupedCertifications = certifications.reduce((acc, cert) => {
+    if (cert.status === "accepted") {
+      const { courseDepartment, courseName } = cert;
+      if (!acc[courseDepartment]) {
+        acc[courseDepartment] = { courseNames: [], department: courseDepartment };
+      }
+      acc[courseDepartment].courseNames.push(courseName);
+    }
+    return acc;
+  }, {});
 
 
 
@@ -240,12 +263,56 @@ function dashboard() {
 if(role==="user"){
   return (
     <div className='flex'>
-    <Sidebar className="w-1/3" />
+    <Sidebar className=" flex w-1/3 " />
     <div className="flex-1 p-4 grid grid-cols-3 gap-4">
-      <div className="bg-gray-200 p-4 rounded shadow">01</div>
-      <div className="bg-gray-200 p-4 rounded shadow">05</div>
-      <div className="bg-gray-200 p-4 rounded shadow">05</div>
+      {data.map((skillDetail) => (
+        <div key={skillDetail.id} className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
+          <div className="font-semibold text-lg text-gray-800 border-b pb-2">Skills:</div>
+          <div className="flex flex-wrap mt-2">
+            {skillDetail.skillSet.map((skill, index) => (
+              <span key={index} className="bg-green-100 text-green-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
+                <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-1" />
+                {skill}
+              </span>
+            ))}
+          </div>
+          <div className="font-semibold text-lg text-gray-800 mt-4 border-b pb-2">Specialized:</div>
+          <div className="flex flex-wrap mt-2">
+            {skillDetail.specialized.map((spec, index) => (
+              <span key={index} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
+                <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mr-1" />
+                {spec}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+
+    {Object.values(groupedCertifications).map((group) => (
+        <div key={group.department} className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
+          <div className="font-semibold text-lg text-gray-800 border-b pb-2 flex items-center">
+            <FontAwesomeIcon icon={faBook} className="mr-2 text-gray-600" />
+            Certifications:
+          </div>
+          <div className="flex flex-wrap mt-2">
+            <span className="text-gray-800">{group.courseNames.join(', ')}</span>
+          </div>
+          <div className="font-semibold text-lg text-gray-800 mt-4 border-b pb-2 flex items-center">
+            <FontAwesomeIcon icon={faBuilding} className="mr-2 text-gray-600" />
+            Department:
+          </div>
+          <div className="flex flex-wrap mt-2">
+            <span className="text-gray-700">{group.department}</span>
+          </div>
+        </div>
+      ))}
       
+      <div className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
+      <b>In today's rapidly evolving work environment, the ability to continuously update and enhance skillsets is crucial for both employees 
+      and organizations. One of the primary mechanisms for managing skillsets within an organization is through a structured request process. 
+      This document outlines the workflow for skillset updates, detailing the steps involved, the roles of administrators, and the criteria for verifying 
+      these requests. </b>     
+      </div>
       <div className=" bg-gray-200 p-4 rounded shadow col-span-3 row-span-5">
       <div className=" h-full">
       <div className='h-1/2'>
@@ -587,7 +654,7 @@ else if(role==="admin")
                   <th className="py-4 px-6 border-b font-semibold text-gray-700">Course Name</th>
                   <th className="py-4 px-6 border-b font-semibold text-gray-700">Skill</th>
                   <th className="py-4 px-6 border-b font-semibold text-gray-700">Test Score</th>
-                  <th className="py-4 px-6 border-b font-semibold text-gray-700">No of Attempts</th>
+                  <th className="py-4 px-6 border-b font-semibold text-gray-700">No of Attempts Lefts</th>
                   <th className="py-4 px-6 border-b font-semibold text-gray-700">Action</th>
                 </tr>
               </thead>

@@ -30,7 +30,6 @@ const addCertification = async (req, res) => {
 // Get certifications by Employee ID
 const getCertificationsByEmployee = async (req, res) => {
   const { employeeId } = req.params;
-
   try {
     const certifications = await getCertificationsByEmployeeId(employeeId);
     res.status(200).json({ certifications });
