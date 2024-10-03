@@ -17,6 +17,12 @@ function dashboard() {
   const [skillsets, setSkillsets] = useState([]);
   const[role,setRole]=useState("")
   const [skillScores, setSkillScores] = useState([]);
+  const[Certification,setCertification] = useState("")
+  const[Cskill,setCskill] = useState("");
+  const[Image,setImage] = useState("");
+  const[cdescription,setcdescription] = useState("");
+  const[courseDepartment,setcourseDepartment] = useState("")
+  const [certifications, setCertifications] = useState([]);
 
 
    
@@ -55,6 +61,26 @@ function dashboard() {
       }
     };
 
+    // Skill Request status with Certificate 
+    const getCertificationsByEmployeeId = async () => {
+      const Employee_id = Cookies.get('Employee_id');
+    
+      try {
+        const response = await axios.get(`http://localhost:1200/certificate/certifications/${Employee_id}`);
+    
+        if (response.status === 200) {
+          console.log('Certifications fetched:', response.data.certifications);
+          setCertifications(response.data.certifications)
+          // You can update your state here to display the fetched certifications
+        } else {
+          console.error('Error fetching certifications:', response.data);
+        }
+      } catch (error) {
+        console.error('Error:', error.response ? error.response.data : error.message);
+      }
+    };
+
+
 
     //Fetch skill to display for Admin
     const fetchSkillScores = async () => {
@@ -65,10 +91,11 @@ function dashboard() {
         console.error('Error fetching SkillScores:', error);
       }
     };
-
+    
     verifyToken();
     fetchSkillScores();
     getSkillsetsrequests(Employee_id);
+    getCertificationsByEmployeeId();
   }, []);
 
 
@@ -99,8 +126,40 @@ function dashboard() {
       setNewRequest(!NewRequest);
       }
    }
-   
 
+
+   const RequestSubmit = async(e)=>
+    {     
+           
+  
+      e.preventDefault()
+        const data ={
+        employeeId: Cookies.get('Employee_id'),
+        skill: skill,
+        description: description,
+        status: 'pending',
+      }
+      //  const data ={
+      //     employeeId: Cookies.get('Employee_id'),
+      //     skill: 'Node',
+      //     description: 'Backend development',
+      //     status: 'pending',
+      //   }
+        try {
+          const response = await axios.post('http://localhost:1200/newskill/skillsets', data);
+          console.log('Skillset created:', response.data);
+        } 
+        catch (error) {
+          console.error('Error creating skillset:', error);
+        }
+   
+          setskill("");
+          setdescription("");
+          setRequestWithoutCertification(!RequestWithoutCertification);
+    }
+  
+   
+    
 
    //admin api requests
 
@@ -135,39 +194,43 @@ function dashboard() {
     }
   };
 
-
-
-
-  const RequestSubmit = async(e)=>
-  {     
-         
-
-    e.preventDefault()
-      const data ={
-      employeeId: Cookies.get('Employee_id'),
-      skill: skill,
-      description: description,
-      status: 'pending',
-    }
-    //  const data ={
-    //     employeeId: Cookies.get('Employee_id'),
-    //     skill: 'Node',
-    //     description: 'Backend development',
-    //     status: 'pending',
-    //   }
-      try {
-        const response = await axios.post('http://localhost:1200/newskill/skillsets', data);
-        console.log('Skillset created:', response.data);
-      } 
-      catch (error) {
-        console.error('Error creating skillset:', error);
+  const CertificateRequestSubmit = async (e) => {
+    e.preventDefault();
+    const Employee_id = Cookies.get('Employee_id');
+  
+    const certificationData = {
+      employeeId: Employee_id,
+      courseName: Certification,
+      certificationLink: Image,
+      skills: Cskill,
+      courseDepartment: courseDepartment,
+      status: 'pending',  // Example status
+      certificationDate: new Date(),  // Example date
+    };
+  
+    try {
+      const response = await axios.post('http://localhost:1200/certificate/certifications', certificationData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.status === 201) {
+        console.log('Certification added:', response.data);
+      } else {
+        console.error('Error adding certification:', response.data);
       }
- 
-        setskill("");
-        setdescription("");
-        setRequestWithoutCertification(!RequestWithoutCertification);
-  }
-
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
+    }
+  
+    setRequestWithCertification(!RequestWithCertification);
+    setCertification('');
+    setImage('');
+    setcdescription('');
+    setCskill('');
+    setcourseDepartment('');
+  };
 
 
 if(role==="user"){
@@ -181,6 +244,7 @@ if(role==="user"){
       
       <div className=" bg-gray-200 p-4 rounded shadow col-span-3 row-span-5">
       <div className=" h-full">
+      <div className='h-1/2'>
       {/* displaying request */}
       <div>
       {skillsets.length > 0 ? (
@@ -208,7 +272,42 @@ if(role==="user"){
         <p>No skillsets found for this employee.</p>
       )}
     </div>
-    {/* Request with certification */}
+    </div>
+     {/* displaying Request Status */}
+     <div className='h-1/2'>
+      {certifications.length > 0 ? (
+        <div className="overflow-x-auto">
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr className="bg-gray-100 border-b">
+              <th className="px-4 py-2 text-left">Course Name</th>
+              <th className="px-4 py-2 text-left">Skills</th>
+              <th className="px-4 py-2 text-left">Department</th>
+              <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Certification Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {certifications.map((certification) => (
+              <tr key={certification.id} className="border-b">
+                <td className="px-4 py-2">{certification.courseName}</td>
+                <td className="px-4 py-2">{certification.skills}</td>
+                <td className="px-4 py-2">{certification.courseDepartment}</td>
+                <td className="px-4 py-2">{certification.status}</td>
+                <td className="px-4 py-2">
+                  {new Date(certification.certificationDate).toLocaleDateString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      ) : (
+        <p>No Certification Requests found for this employee.</p>
+      )}
+    </div>
+
+    {/* Request with certification model */}
     {RequestWithCertification && (
         <div
           id="authentication-modal"
@@ -244,28 +343,33 @@ if(role==="user"){
 
                 </button>
                 <div class="relative">
-                <form class="space-y-4 mt-5" onSubmit={RequestSubmit}>
+                <form class="space-y-4 mt-5" onSubmit={CertificateRequestSubmit}>
 
                     
                     <div>
                     <span className='mb-2 text-md'>Certification Name</span>
-                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={Certification} onChange={(e)=>setCertification(e.target.value)} />
                     </div>
 
                     <div>
                     <span className='mb-2 text-md'>Skill</span>
-                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={Cskill} onChange={(e)=>setCskill(e.target.value)} />
                     </div>
 
                     <div>
                     <span className='mb-2 text-md'>Image Link</span>
-                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={Image} onChange={(e)=>setImage(e.target.value)} />
+                    </div>
+
+                    <div>
+                    <span className='mb-2 text-md'>courseDepartment</span>
+                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={courseDepartment} onChange={(e)=>setcourseDepartment(e.target.value)} />
                     </div>
               
               
                     <div>
                     <span className='mb-2 text-md'>Description</span>
-                    <textarea type="text" name="description" id="description" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={description} onChange={(e)=>setdescription(e.target.value)}    />
+                    <textarea type="text" name="description" id="description" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" value={cdescription} onChange={(e)=>setcdescription(e.target.value)}    />
                     </div>
                     <button type="submit" className="w-full bg-primary-100 text-white py-2 px-2 rounded-lg mb-2 hover:border-gray-300 mt-2" >Submit Request</button>
                   

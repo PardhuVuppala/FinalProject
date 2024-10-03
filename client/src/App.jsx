@@ -5,6 +5,7 @@ import SignUp from './SignUp.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import SkillTest from './SKillTest.jsx';
 import TestWindow from './TestWindow.jsx';
+import CertificationData from './CertificationData.jsx';
 function App() {
 
   return (
@@ -16,7 +17,7 @@ function App() {
        <Route path='/SignUp' element={<SignUp/>}/>
        <Route path='/skilltest' element={<SkillTest/>}/>
        <Route path='/TestWindow/:examId' element={<TestWindow/>}/>
-
+       <Route path='/CertificationData' element={<CertificationData/>}/>
       </Routes>
       </BrowserRouter>
     </div>
