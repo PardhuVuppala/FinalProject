@@ -316,71 +316,125 @@ if(role==="user"){
       <div className=" bg-gray-200 p-4 rounded shadow col-span-3 row-span-5">
       <div className=" h-full">
       <div className='h-1/2'>
-      {/* displaying request */}
-      <div>
-        <h2 className='text-center bg-gray-200'>Skill Request Without Certification</h2>
-      {skillsets.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto">
-            <thead>
-              <tr className="bg-gray-100 border-b">
-                <th className="px-4 py-2 text-left">Skill</th>
-                <th className="px-4 py-2 text-left">Description</th>
-                <th className="px-4 py-2 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {skillsets.map((skillset) => (
-                <tr key={skillset.id} className="border-b">
-                  <td className="px-4 py-2">{skillset.skill}</td>
-                  <td className="px-4 py-2">{skillset.description}</td>
-                  <td className="px-4 py-2">{skillset.status}</td>
+  {/* Displaying request */}
+  <div>
+    <h2 className='text-center text-xl font-semibold bg-gray-200 rounded-lg p-2 '>Skill Request Without Certification</h2>
+    {skillsets.length > 0 ? (
+      <div className="overflow-x-auto mt-4">
+        <table className="min-w-full table-auto bg-white rounded-lg shadow-lg">
+          <thead>
+            <tr className="bg-primary-100 text-white border-b">
+              <th className="px-4 py-2 text-left">Skill</th>
+              <th className="px-4 py-2 text-left">Description</th>
+              <th className="px-4 py-2 text-left">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {skillsets.map((skillset) => {
+              let statusColorClass;
+              let statusIcon;
+              
+              switch (skillset.status) {
+                case 'accepted':
+                  statusColorClass = 'bg-green-100 text-green-800';
+                  statusIcon = '✅'; // Check mark icon
+                  break;
+                case 'pending':
+                  statusColorClass = 'bg-yellow-100 text-yellow-800';
+                  statusIcon = '⏳'; // Hourglass icon
+                  break;
+                case 'rejected':
+                  statusColorClass = 'bg-red-100 text-red-800';
+                  statusIcon = '❌'; // Cross mark icon
+                  break;
+                default:
+                  statusColorClass = 'bg-gray-200 text-gray-700';
+                  statusIcon = '❓'; // Question mark icon
+              }
+
+              return (
+                <tr key={skillset.id} className="border-b hover:bg-gray-50 transition-colors duration-200">
+                  <td className="px-4 py-2 font-medium">{skillset.skill}</td>
+                  <td className="px-4 py-2 text-gray-700">{skillset.description}</td>
+                  <td className={`px-4 py-2 rounded-lg flex items-center ${statusColorClass}`}>
+                    <span className="mr-2">{statusIcon}</span>
+                    {skillset.status}
+                  </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p>No skillsets found for this employee.</p>
-      )}
-    </div>
-    </div>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <p className="mt-4 text-center text-gray-500">No skillsets found for this employee.</p>
+    )}
+  </div>
+</div>
+
 
 
      {/* displaying Request Status */}
      <div className='h-1/2'>
-     <h2 className='text-center bg-gray-200'>Skill Request with Certifications</h2>
-      {certifications.length > 0 ? (
-        <div className="overflow-x-auto">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-100 border-b">
-              <th className="px-4 py-2 text-left">Course Name</th>
-              <th className="px-4 py-2 text-left">Skills</th>
-              <th className="px-4 py-2 text-left">Department</th>
-              <th className="px-4 py-2 text-left">Status</th>
-              <th className="px-4 py-2 text-left">Certification Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {certifications.map((certification) => (
-              <tr key={certification.id} className="border-b">
-                <td className="px-4 py-2">{certification.courseName}</td>
-                <td className="px-4 py-2">{certification.skills}</td>
+  <h2 className='text-center text-xl font-semibold bg-gray-200 rounded-lg p-2'>Skill Request with Certifications</h2>
+  {certifications.length > 0 ? (
+    <div className="overflow-x-auto mt-4">
+      <table className="min-w-full table-auto bg-white rounded-lg shadow-lg">
+        <thead>
+          <tr className="bg-primary-100 text-white border-b">
+            <th className="px-4 py-2 text-left">Course Name</th>
+            <th className="px-4 py-2 text-left">Skills</th>
+            <th className="px-4 py-2 text-left">Department</th>
+            <th className="px-4 py-2 text-left">Status</th>
+            <th className="px-4 py-2 text-left">Certification Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {certifications.map((certification) => {
+            let statusColorClass;
+            let statusIcon;
+
+            switch (certification.status) {
+              case 'accepted':
+                statusColorClass = 'bg-green-100 text-green-800';
+                statusIcon = '✅'; // Check mark icon
+                break;
+              case 'pending':
+                statusColorClass = 'bg-yellow-100 text-yellow-800';
+                statusIcon = '⏳'; // Hourglass icon
+                break;
+              case 'rejected':
+                statusColorClass = 'bg-red-100 text-red-800';
+                statusIcon = '❌'; // Cross mark icon
+                break;
+              default:
+                statusColorClass = 'bg-gray-200 text-gray-700';
+                statusIcon = '❓'; // Question mark icon
+            }
+
+            return (
+              <tr key={certification.id} className="border-b hover:bg-gray-50 transition-colors duration-200">
+                <td className="px-4 py-2 font-medium">{certification.courseName}</td>
+                <td className="px-4 py-2 text-gray-700">{certification.skills}</td>
                 <td className="px-4 py-2">{certification.courseDepartment}</td>
-                <td className="px-4 py-2">{certification.status}</td>
+                <td className={`px-4 py-2 rounded-lg flex items-center ${statusColorClass}`}>
+                  <span className="mr-2">{statusIcon}</span>
+                  {certification.status}
+                </td>
                 <td className="px-4 py-2">
                   {new Date(certification.certificationDate).toLocaleDateString()}
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      ) : (
-        <p>No Certification Requests found for this employee.</p>
-      )}
+            );
+          })}
+        </tbody>
+      </table>
     </div>
+  ) : (
+    <p className="mt-4 text-center text-gray-500">No Certification Requests found for this employee.</p>
+  )}
+</div>
+
 
     {/* Request with certification model */}
     {RequestWithCertification && (
