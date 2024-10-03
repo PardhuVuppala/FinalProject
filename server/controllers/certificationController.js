@@ -10,6 +10,19 @@ const addCertification = async (req, res) => {
   const employeeId = req.body.employeeId || req.cookies.Employee_id;  // Get Employee ID from request or cookies
 
   try {
+    // Check for existing certification with the same courseName and 'pending' or 'accepted' status
+    const existingCertification = await getCertificationsByEmployeeId(employeeId);
+
+    const isCertificationExists = existingCertification.some(cert => 
+      cert.courseName === courseName && 
+      (cert.status === 'pending' || cert.status === 'accepted')
+    );
+
+    if (isCertificationExists) {
+      return res.status(400).json({ message: 'Certification request is already pending or accepted for this course.' });
+    }
+
+    // Prepare certification data
     const certificationData = {
       employeeId,
       courseName,
@@ -20,12 +33,14 @@ const addCertification = async (req, res) => {
       certificationDate,
     };
 
+    // Create new certification
     const certification = await createCertification(certificationData);
     res.status(201).json({ certification });
   } catch (error) {
     res.status(400).json({ error: 'Error adding certification', details: error.message });
   }
 };
+
 
 // Get certifications by Employee ID
 const getCertificationsByEmployee = async (req, res) => {

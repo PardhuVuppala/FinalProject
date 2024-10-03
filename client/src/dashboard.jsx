@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { faBook, faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function dashboard() {
@@ -27,6 +29,8 @@ function dashboard() {
   const[courseDepartment,setcourseDepartment] = useState("")
   const [certifications, setCertifications] = useState([]);
   const [data, setData] = useState([]);
+  const notify = (message) => toast(message);
+
 
 
    
@@ -116,15 +120,21 @@ function dashboard() {
   const groupedCertifications = certifications.reduce((acc, cert) => {
     if (cert.status === "accepted") {
       const { courseDepartment, courseName } = cert;
+  
+      // Initialize the department if it doesn't exist
       if (!acc[courseDepartment]) {
-        acc[courseDepartment] = { courseNames: [], department: courseDepartment };
+        acc[courseDepartment] = { courseNames: new Set(), department: courseDepartment }; // Use Set for unique values
       }
-      acc[courseDepartment].courseNames.push(courseName);
+      acc[courseDepartment].courseNames.add(courseName); // Add course name to Set
     }
     return acc;
   }, {});
-
-
+  
+  // Convert Sets to Arrays for rendering
+  const groupedCertificationsArray = Object.values(groupedCertifications).map(group => ({
+    department: group.department,
+    courseNames: Array.from(group.courseNames), // Convert Set to Array
+  }));
 
   //Model Function for New Request for closing and Opening
   const NewSkillRequest =()=>
@@ -174,7 +184,11 @@ function dashboard() {
           console.log('Skillset created:', response.data);
         } 
         catch (error) {
+          if (error.response && error.response.status === 400) {
+            notify("Skillset already exists for this employee")
+          }
           console.error('Error creating skillset:', error);
+          
         }
    
           setskill("");
@@ -221,6 +235,7 @@ function dashboard() {
     }
   };
 
+
   const CertificateRequestSubmit = async (e) => {
     e.preventDefault();
     const Employee_id = Cookies.get('Employee_id');
@@ -244,13 +259,25 @@ function dashboard() {
   
       if (response.status === 201) {
         console.log('Certification added:', response.data);
+        notify("Certification added successfully!"); // Notify on success
       } else {
         console.error('Error adding certification:', response.data);
       }
     } catch (error) {
-      console.error('Error:', error.response ? error.response.data : error.message);
+      if (error.response) {
+        // Check if the error message indicates a pending or accepted request
+        if (error.response.data.message.includes('pending or accepted')) {
+          notify("Certification request is already pending or accepted for this course."); // Notify the user
+        } else {
+          notify(error.response.data.message); // Display the server error message
+        }
+      } else {
+        console.error('Error:', error.message);
+        notify("An unexpected error occurred. Please try again."); // General error notification
+      }
     }
   
+    // Reset form fields after submission
     setRequestWithCertification(!RequestWithCertification);
     setCertification('');
     setImage('');
@@ -258,12 +285,14 @@ function dashboard() {
     setCskill('');
     setcourseDepartment('');
   };
+  
 
 
 if(role==="user"){
   return (
     <div className='flex'>
     <Sidebar className=" flex w-1/3 " />
+    <ToastContainer/>
     <div className="flex-1 p-4 grid grid-cols-3 gap-4">
       {data.map((skillDetail) => (
         <div key={skillDetail.id} className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
@@ -288,24 +317,23 @@ if(role==="user"){
         </div>
       ))}
 
-    {Object.values(groupedCertifications).map((group) => (
-        <div key={group.department} className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
-          <div className="font-semibold text-lg text-gray-800 border-b pb-2 flex items-center">
-            <FontAwesomeIcon icon={faBook} className="mr-2 text-gray-600" />
-            Certifications:
-          </div>
-          <div className="flex flex-wrap mt-2">
-            <span className="text-gray-800">{group.courseNames.join(', ')}</span>
-          </div>
-          <div className="font-semibold text-lg text-gray-800 mt-4 border-b pb-2 flex items-center">
-            <FontAwesomeIcon icon={faBuilding} className="mr-2 text-gray-600" />
-            Department:
-          </div>
-          <div className="flex flex-wrap mt-2">
-            <span className="text-gray-700">{group.department}</span>
-          </div>
-        </div>
-      ))}
+<div className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
+      <div className="font-semibold text-lg text-gray-800 border-b pb-2 flex items-center">
+        <FontAwesomeIcon icon={faBook} className="mr-2 text-gray-600" />
+        Certifications and Departments:
+      </div>
+      <div className="flex flex-col mt-2">
+        {/* Display certifications in a single line */}
+        <span className="text-gray-800">
+          Certifications: {groupedCertificationsArray.flatMap(group => group.courseNames).join(', ')}
+        </span>
+        {/* Display departments in a single line */}
+        <span className="text-gray-700 mt-2">
+          Departments: {groupedCertificationsArray.map(group => group.department).join(', ')}
+        </span>
+      </div>
+    </div>
+
       
       <div className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
       <b>In today's rapidly evolving work environment, the ability to continuously update and enhance skillsets is crucial for both employees 

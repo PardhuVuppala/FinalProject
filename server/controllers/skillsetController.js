@@ -8,6 +8,17 @@ const createSkillset = async (req, res) => {
 
   try {
     // Fetch the assessment details based on the skill (courseName)
+    const existingSkillset = await skillsetModel.existingSkillRequest({
+      employeeId,
+      skill,
+      status: ['pending', 'accepted'], // Check for both pending and accepted statuses
+    });
+
+    if (existingSkillset) {
+      return res.status(400).json({ message: 'Skillset request is already pending or accepted for this skill.' });
+    }
+
+    console.log(existingSkillset)
     const assessment = await assessmentModel.findAssessmentByCourseName({
       where: { courseName: skill },
     });

@@ -12,6 +12,30 @@ const createSkillset = async (data) => {
   });
 };
 
+const existingSkillRequest = async (data) => {
+  const { employeeId, skill, status } = data;
+  
+  try {
+    // Query the database to find if a skillset request exists
+    const existingSkillset = await prisma.updateSkillsetWithoutCertification.findFirst({
+      where: {
+        employeeId: employeeId,
+        skill: skill, // Ensure this matches your schema
+        status: {
+          in: status, // Check for 'pending' or 'accepted' status
+        },
+      },
+    });
+
+    console.log('Found existing skillset:', existingSkillset);
+    return existingSkillset; // Will be null if no match is found
+  } catch (error) {
+    console.error('Error fetching existing skillset:', error);
+    throw new Error('Database error');
+  }
+};
+
+
 const getSkillsetsByEmployeeId = async (employeeId) => {
   return prisma.updateSkillsetWithoutCertification.findMany({
     where: {
@@ -42,4 +66,5 @@ module.exports = {
   getSkillsetsByEmployeeId,
   updateSkillset,
   deleteSkillset,
+  existingSkillRequest
 };
