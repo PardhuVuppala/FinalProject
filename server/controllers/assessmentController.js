@@ -1,14 +1,28 @@
 const assessmentModel = require('../models/assessmentModel');
 
+
 const addAssessment = async (req, res) => {
   try {
     const { courseName, courseDepartment, questionsAndOptions } = req.body;
 
+    // Check if course already exists
+    const existingCourse = await assessmentModel.findCourseByName(courseName);
+
+    if (existingCourse) {
+      return res.status(400).json('Course already present');
+    }
+
+    // Limit questions to a maximum of 20
+    if (questionsAndOptions.length > 20) {
+      return res.status(400).json('Cannot add more than 20 questions');
+    }
+
+    // Create new assessment
     const newAssessment = await assessmentModel.createAssessment({
       courseName,
       courseDepartment,
-      questionsAndOptions
-      });
+      questionsAndOptions,
+    });
 
     res.status(201).json(true);
   } catch (error) {

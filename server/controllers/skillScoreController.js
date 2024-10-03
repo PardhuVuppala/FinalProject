@@ -29,6 +29,8 @@ const updateSkillScore = async (req, res) => {
 };
 
 
+
+
 // const getAllSkillScores = async (req, res) => {
 //   try {
 //     const skillScores = await skillScoreModel.getAllSkillScoresFromDB();  // Fetch data from the model
@@ -67,13 +69,62 @@ const getAllSkillScores = async (req, res) => {
 
 const updateSkillScoreStatus = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, skill, employeeId, courseDepartment } = req.body;
+  console.log(skill);
 
   try {
+    // Update the skill score status
     const updatedSkillScore = await prisma.skillScore.update({
       where: { id },
       data: { status },
     });
+
+    const updateRequest = await prisma.updateSkillsetWithoutCertification.updateMany({
+      where: { 
+        employeeId: employeeId,
+        skill: skill 
+      },
+      data: { status: status }, // Update the status field
+    });
+
+    // Check if the status is "accepted"
+    if (status === "accepted") {
+      // Fetch the Skillset for the employee
+      const employeeSkillset = await prisma.skillset.findFirst({
+        where: { employeeId: employeeId },
+      });
+
+      // If the Skillset does not exist, create a new one
+      if (!employeeSkillset) {
+        await prisma.skillset.create({
+          data: {
+            employeeId: employeeId,
+            skillSet: [skill], // Add skill to the skill set
+            specialized: courseDepartment ? [courseDepartment] : [], // Add courseDepartment if provided
+          },
+        });
+      } else {
+        // If the Skillset exists, check and update skillSet
+        if (!employeeSkillset.skillSet.includes(skill)) {
+          await prisma.skillset.update({
+            where: { id: employeeSkillset.id }, // Use the ID of the existing skillset
+            data: {
+              skillSet: { push: skill }, // Add new skill to the skillSet
+            },
+          });
+        }
+
+        // Check if the courseDepartment already exists in specialized skills
+        if (courseDepartment && !employeeSkillset.specialized.includes(courseDepartment)) {
+          await prisma.skillset.update({
+            where: { id: employeeSkillset.id }, // Use the ID of the existing skillset
+            data: {
+              specialized: { push: courseDepartment }, // Add courseDepartment to specialized
+            },
+          });
+        }
+      }
+    }
 
     res.status(200).json(updatedSkillScore);
   } catch (error) {
@@ -81,6 +132,7 @@ const updateSkillScoreStatus = async (req, res) => {
     res.status(500).json({ message: 'Error updating skill score status' });
   }
 };
+
 
 module.exports = {
   updateSkillScore,

@@ -41,10 +41,10 @@ const getCertificationsByEmployee = async (req, res) => {
 
 const updateCertification = async (req, res) => {
     const { certificationId } = req.params;
-    const { status } = req.body;
-  
+    const {employeeId, skill, courseDepartment, status } = req.body;
+    console.log(courseDepartment)
     try {
-      const updatedCertification = await updateCertificationStatus(certificationId, status);
+      const updatedCertification = await updateCertificationStatus(certificationId, employeeId, skill, courseDepartment, status);
       res.status(200).json({ certification: updatedCertification });
     } catch (error) {
       res.status(400).json({ error: 'Error updating certification status', details: error.message });

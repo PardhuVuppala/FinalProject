@@ -87,6 +87,7 @@ function dashboard() {
       try {
         const response = await axios.get('http://localhost:1200/skillScore/details');
         setSkillScores(response.data);
+        console.log(response.data)
       } catch (error) {
         console.error('Error fetching SkillScores:', error);
       }
@@ -164,14 +165,17 @@ function dashboard() {
    //admin api requests
 
 
-   const handleAccept = async (id) => {
+   const handleAccept = async (id,skill,employeeId,courseDepartment) => {
     try {
       await axios.put(`http://localhost:1200/skillScore/update/${id}`, {
-        status: 'Accepted'
+        status: 'accepted',
+        skill,
+        employeeId,
+        courseDepartment
       });
       // Update the local state after acceptance
       setSkillScores((prevScores) =>
-        prevScores.map((score) => (score.id === id ? { ...score, status: 'Accepted' } : score))
+        prevScores.map((score) => (score.id === id ? { ...score, status: 'accepted' } : score))
       );
     } catch (error) {
       console.error('Error accepting the user:', error);
@@ -183,11 +187,11 @@ function dashboard() {
   const handleReject = async (id) => {
     try {
       await axios.put(`http://localhost:1200/skillScore/update/${id}`, {
-        status: 'Rejected'
+        status: 'rejected'
       });
       // Update the local state after rejection
       setSkillScores((prevScores) =>
-        prevScores.map((score) => (score.id === id ? { ...score, status: 'Rejected' } : score))
+        prevScores.map((score) => (score.id === id ? { ...score, status: 'rejected' } : score))
       );
     } catch (error) {
       console.error('Error rejecting the user:', error);
@@ -247,6 +251,7 @@ if(role==="user"){
       <div className='h-1/2'>
       {/* displaying request */}
       <div>
+        <h2 className='text-center bg-gray-200'>Skill Request Without Certification</h2>
       {skillsets.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto">
@@ -273,8 +278,11 @@ if(role==="user"){
       )}
     </div>
     </div>
+
+
      {/* displaying Request Status */}
      <div className='h-1/2'>
+     <h2 className='text-center bg-gray-200'>Skill Request with Certifications</h2>
       {certifications.length > 0 ? (
         <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
@@ -428,10 +436,31 @@ if(role==="user"){
 
                  
 
-                    <div>
+                <div>
                     <span className='mb-2 text-md'>Skill</span>
-                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={skill} onChange={(e)=>setskill(e.target.value)} />
-                    </div>
+                    <select 
+                      name="skill" 
+                      id="skill" 
+                      className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      value={skill} 
+                      onChange={(e) => setskill(e.target.value)} // Ensure your setter function is named correctly
+                    >
+                      <option value="" disabled>Select a skill</option> {/* Optional: Placeholder option */}
+                      <option value="React">React</option>
+                      <option value="Node">Node</option>
+                      <option value="Java">Java</option>
+                      <option value="TypeScript">TypeScript</option>
+                      <option value="MySQL">MySQL</option>
+                      <option value="MongoDB">MongoDB</option>
+                      <option value="AWS">AWS</option>
+                      <option value="Azure">Azure</option>
+                      <option value="Azure">Express</option>
+                      <option value="Node js">Node js</option>
+                      <option value="Data Structures and Algorithms">Data Structures and Algorithms</option>
+
+                    </select>
+                  </div>
+
       
                     <div>
                     <span className='mb-2 text-md'>Description</span>
@@ -551,7 +580,7 @@ else if(role==="admin")
       {/* displaying request */}
      
             <div className="container mx-auto p-6">
-            <h1 className="text-4xl font-bold mb-8 text-center text-indigo-700">Skill Score Details</h1>
+            <h1 className="text-4xl font-bold mb-8 text-center bg-gray-200 ">Skill Score Details</h1>
             <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
               <thead className="bg-indigo-50">
                 <tr>
@@ -563,7 +592,7 @@ else if(role==="admin")
                 </tr>
               </thead>
               <tbody>
-                {skillScores.map((score) => (
+               {skillScores.map((score) => (
                   <tr key={score.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
                     <td className="py-4 px-6 border-b text-gray-800">{score.courseName}</td>
                     <td className="py-4 px-6 border-b text-gray-800">{score.skill}</td>
@@ -576,50 +605,50 @@ else if(role==="admin")
                     </td>
                     <td className="py-4 px-6 border-b text-gray-800">{score.noOfAttempts}</td>
                     <td className="py-4 px-6 border-b text-gray-800">
-                    {score.status === "Accepted" || score.status === "Rejected" ? (
-          <span className={`font-semibold ${score.status === 'Accepted' ? 'text-green-500' : 'text-red-500'}`}>
-            {score.status}
-          </span>
-        ) : (
-          <>
-            {score.noOfAttempts === 0 ? (
-              <>
-                <button
-                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mr-2 transition duration-200 ease-in-out"
-                  onClick={() => handleAccept(score.id)}
-                >
-                  Accept
-                </button>
-                <button
-                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
-                  onClick={() => handleReject(score.id)}
-                >
-                  Reject
-                </button>
-              </>
-            ) : (
-              <>
-                <p className="text-gray-500 italic">User has to attempt the test</p>
-                <button 
-                  className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed"
-                  disabled
-                >
-                  Accept
-                </button>
-                <button 
-                  className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed ml-2"
-                  disabled
-                >
-                  Reject
-                </button>
-              </>
-            )}
-          </>
-        )}
-
+                      {score.status === "accepted" || score.status === "rejected" ? (
+                        <span className={`font-semibold ${score.status === 'accepted' ? 'text-green-500' : 'text-red-500'}`}>
+                          {score.status}
+                        </span>
+                      ) : (
+                        <>
+                          {score.noOfAttempts === 0 && score.status === 'pending' ? (
+                            <>
+                              <button
+                                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mr-2 transition duration-200 ease-in-out"
+                                onClick={() => handleAccept(score.id, score.skill, score.employeeId ,score.courseDepartment)}
+                              >
+                                Accept
+                              </button>
+                              <button
+                                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
+                                onClick={() => handleReject(score.id)}
+                              >
+                                Reject
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-gray-500 italic">User has to attempt the test</p>
+                              <button 
+                                className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed"
+                                disabled
+                              >
+                                Accept
+                              </button>
+                              <button 
+                                className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed ml-2"
+                                disabled
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
+
               </tbody>
             </table>
           </div>      

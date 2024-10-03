@@ -11,6 +11,12 @@ const createAssessment = async (data) => {
   });
 };
 
+const findCourseByName = async (courseName) => {
+  return await prisma.assessments.findFirst({
+    where: { courseName},
+  });
+};
+
 
 const findAssessmentByCourseName = async ({ where: { courseName: skill } }) => {
   return await prisma.assessments.findFirst({
@@ -29,6 +35,7 @@ const findAssessmentById = async (assessmentId) => {
 
 module.exports = {
   createAssessment,
+  findCourseByName,
   findAssessmentByCourseName,
   findAssessmentById
 };

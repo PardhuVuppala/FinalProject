@@ -12,6 +12,7 @@ export default function CertificationData() {
       try {
         const response = await axios.get('http://localhost:1200/certificate/certificationsDetails');
         setCertifications(response.data.certifications);
+        console.log(response.data.certifications)
       } catch (error) {
         console.error('Error fetching certifications:', error);
       }
@@ -21,9 +22,9 @@ export default function CertificationData() {
   }, []);
 
   // Function to handle accept/reject action
-  const handleStatusChange = async (certificationId, status) => {
+  const handleStatusChange = async (certificationId, employeeId, skill, courseDepartment, status) => {
     try {
-      await axios.put(`http://localhost:1200/certificate/certifications/${certificationId}`, { status });
+      await axios.put(`http://localhost:1200/certificate/certifications/${certificationId}`, { employeeId, skill, courseDepartment,status });
       setCertifications(prev =>
         prev.map(certification =>
           certification.id === certificationId ? { ...certification, status } : certification
@@ -88,7 +89,7 @@ export default function CertificationData() {
                       {certification.status === 'pending' ? (
                         <>
                           <button
-                            onClick={() => handleStatusChange(certification.id, 'accepted')}
+                            onClick={() => handleStatusChange(certification.id, certification.employeeId ,certification.skills, certification.courseDepartment,'accepted')}
                             className="bg-green-500 text-white px-2 py-1 rounded mr-2"
                           >
                             Accept
