@@ -1,5 +1,5 @@
 const express = require('express');
-const { getCourseStatistics,getSkillStatistics,getSkillScoreStatistics } = require("../controllers/GraphicalAnalasis")
+const { getCourseStatistics,getSkillStatistics,getSkillScoreStatistics,getTopThreeEmployees,getTopEmployeeBySkillsetAndAverage } = require("../controllers/GraphicalAnalasis")
 
 const router = express.Router();
 
@@ -7,6 +7,10 @@ const router = express.Router();
 router.get('/course-statistics', getCourseStatistics);
 router.get('/skill-statistics', getSkillStatistics);
 router.get('/getSkillScoreStatistics', getSkillScoreStatistics);
+router.get('/top-certifications', getTopThreeEmployees);
+router.get('/top-employee', getTopEmployeeBySkillsetAndAverage);
+
+
 
 
 module.exports = router;

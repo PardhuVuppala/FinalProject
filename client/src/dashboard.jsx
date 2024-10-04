@@ -10,6 +10,7 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { faBook, faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import GraphicalAnalasis from './GraphicalAnalasisForCertification';
 
 
 function dashboard() {
@@ -21,7 +22,6 @@ function dashboard() {
   const[description,setdescription] = useState("")
   const [skillsets, setSkillsets] = useState([]);
   const[role,setRole]=useState("")
-  const [skillScores, setSkillScores] = useState([]);
   const[Certification,setCertification] = useState("")
   const[Cskill,setCskill] = useState("");
   const[Image,setImage] = useState("");
@@ -88,16 +88,6 @@ function dashboard() {
 
 
 
-    //Fetch skill to display for Admin
-    const fetchSkillScores = async () => {
-      try {
-        const response = await axios.get('http://localhost:1200/skillScore/details');
-        setSkillScores(response.data);
-        console.log(response.data)
-      } catch (error) {
-        console.error('Error fetching SkillScores:', error);
-      }
-    };
     const fetchSkillSet = async (employeeId) => {
       try {
         const response = await axios.get(`http://localhost:1200/skill/skillset/${employeeId}`);
@@ -110,7 +100,6 @@ function dashboard() {
 
    
     verifyToken();
-    fetchSkillScores();
     getSkillsetsrequests(Employee_id);
     getCertificationsByEmployeeId();
     fetchSkillSet(Employee_id);
@@ -199,46 +188,6 @@ function dashboard() {
   
    
     
-
-   //admin api requests
-
-
-   const handleAccept = async (id,skill,employeeId,courseDepartment) => {
-    try {
-      await axios.put(`http://localhost:1200/skillScore/update/${id}`, {
-        status: 'accepted',
-        skill,
-        employeeId,
-        courseDepartment
-      });
-      // Update the local state after acceptance
-      setSkillScores((prevScores) =>
-        prevScores.map((score) => (score.id === id ? { ...score, status: 'accepted' } : score))
-      );
-    } catch (error) {
-      console.error('Error accepting the user:', error);
-    }
-  };
-
-
-
-  const handleReject = async (id,skill,employeeId,courseDepartment) => {
-    try {
-      await axios.put(`http://localhost:1200/skillScore/update/${id}`, {
-        status: 'rejected',
-        skill,
-        employeeId,
-        courseDepartment
-      });
-      
-      // Update the local state after rejection
-      setSkillScores((prevScores) =>
-        prevScores.map((score) => (score.id === id ? { ...score, status: 'rejected' } : score))
-      );
-    } catch (error) {
-      console.error('Error rejecting the user:', error);
-    }
-  };
 
 
   const CertificateRequestSubmit = async (e) => {
@@ -508,15 +457,41 @@ if(role==="user"){
                 <form class="space-y-4 mt-5" onSubmit={CertificateRequestSubmit}>
 
                     
-                    <div>
-                    <span className='mb-2 text-md'>Certification Name</span>
-                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={Certification} onChange={(e)=>setCertification(e.target.value)} />
-                    </div>
+                <div>
+                <span className='mb-2 text-md'>Certification Name</span>
+                <input
+                  type="text"
+                  name="certification"
+                  id="certification"
+                  className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  value={Certification}
+                  onChange={(e) => setCertification(e.target.value)}
+                />
+              </div>
 
-                    <div>
-                    <span className='mb-2 text-md'>Skill</span>
-                    <input type="text" name="skill" id="skill" className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"  value={Cskill} onChange={(e)=>setCskill(e.target.value)} />
-                    </div>
+              <div>
+                <span className='mb-2 text-md'>Skill</span>
+                <select
+                  name="skill"
+                  id="skill"
+                  className="block w-full mt-1.5 bg-textbg rounded-md box-border border-0 px-0 text-gray-900 pl-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  value={Cskill}
+                  onChange={(e) => setCskill(e.target.value)}
+                >
+                  <option value="" disabled>Select a skill</option> {/* Optional: Placeholder option */}
+                  <option value="React">React</option>
+                  <option value="Node.js">Node.js</option>
+                  <option value="Java">Java</option>
+                  <option value="TypeScript">TypeScript</option>
+                  <option value="MySQL">MySQL</option>
+                  <option value="MongoDB">MongoDB</option>
+                  <option value="AWS">AWS</option>
+                  <option value="Azure">Azure</option>
+                  <option value="Express">Express</option>
+                  <option value="Data Structures and Algorithms">Data Structures and Algorithms</option>
+                </select>
+              </div>
+
 
                     <div>
                     <span className='mb-2 text-md'>Image Link</span>
@@ -722,94 +697,7 @@ if(role==="user"){
 else if(role==="admin")
 {
   return (
-    <div className='flex'>
-    <Sidebar className="w-1/3" />
-    <div className="flex-1 p-4 grid grid-cols-3 gap-4">
-      <div className="bg-gray-200 p-4 rounded shadow">01</div>
-      <div className="bg-gray-200 p-4 rounded shadow">05</div>
-      <div className="bg-gray-200 p-4 rounded shadow">05</div>
-      
-      <div className=" bg-gray-200 p-4 rounded shadow col-span-3 row-span-5">
-      <div className=" h-full">
-      {/* displaying request */}
-     
-            <div className="container mx-auto p-6">
-            <h1 className="text-4xl font-bold mb-8 text-center bg-gray-200 ">Skill Score Details</h1>
-            <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
-              <thead className="bg-indigo-50">
-                <tr>
-                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Course Name</th>
-                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Skill</th>
-                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Test Score</th>
-                  <th className="py-4 px-6 border-b font-semibold text-gray-700">No of Attempts Lefts</th>
-                  <th className="py-4 px-6 border-b font-semibold text-gray-700">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-               {skillScores.map((score) => (
-                  <tr key={score.id} className="hover:bg-gray-50 transition duration-200 ease-in-out">
-                    <td className="py-4 px-6 border-b text-gray-800">{score.courseName}</td>
-                    <td className="py-4 px-6 border-b text-gray-800">{score.skill}</td>
-                    <td className="py-4 px-6 border-b text-gray-800">
-                      {score.testScore === 0 && score.noOfAttempts > 0 ? (
-                        <span className="text-red-500 italic">Test is not attempted</span>
-                      ) : (
-                        score.testScore
-                      )}
-                    </td>
-                    <td className="py-4 px-6 border-b text-gray-800">{score.noOfAttempts}</td>
-                    <td className="py-4 px-6 border-b text-gray-800">
-                      {score.status === "accepted" || score.status === "rejected" ? (
-                        <span className={`font-semibold ${score.status === 'accepted' ? 'text-green-500' : 'text-red-500'}`}>
-                          {score.status}
-                        </span>
-                      ) : (
-                        <>
-                          {score.noOfAttempts === 0 && score.status === 'pending' ? (
-                            <>
-                              <button
-                                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mr-2 transition duration-200 ease-in-out"
-                                onClick={() => handleAccept(score.id, score.skill, score.employeeId ,score.courseDepartment)}
-                              >
-                                Accept
-                              </button>
-                              <button
-                                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
-                                onClick={() => handleReject(score.id, score.skill, score.employeeId ,score.courseDepartment)}
-                              >
-                                Reject
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <p className="text-gray-500 italic">User has to attempt the test</p>
-                              <button 
-                                className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed"
-                                disabled
-                              >
-                                Accept
-                              </button>
-                              <button 
-                                className="bg-gray-300 text-gray-500 font-semibold py-2 px-4 rounded-lg shadow-md cursor-not-allowed ml-2"
-                                disabled
-                              >
-                                Reject
-                              </button>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-
-              </tbody>
-            </table>
-          </div>      
-        </div>
-       </div>
-      </div>
-    </div>
+    <GraphicalAnalasis/>
   );
 }
 }

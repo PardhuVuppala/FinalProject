@@ -1,15 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect} from 'react';
 import Sidebar from './UI Components/sidebar';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import Cookies from "js-cookie";
+
 
 const AssessmentForm = () => {
   const [courseName, setCourseName] = useState('');
   const [courseDepartment, setCourseDepartment] = useState('');
   const [questionsAndOptions, setQuestionsAndOptions] = useState([{ Question: '', Options: ['', '', '', ''], Answer: '' }]);
+  const Navigate = useNavigate()
   const notify = (message) => toast(message);
-
+   
+   useEffect(()=>{
+    const token = Cookies.get("token");
+    const role = Cookies.get("role");
+    const Employee_id = Cookies.get('Employee_id');
+    //token verifucation
+    const verifyToken = async () => {
+      try {
+        const response = await axios.get("http://localhost:1200/Employee/is-verify", {
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        });
+     
+      } catch (error) {
+        console.error(error);
+        Navigate("/");
+      }
+    };
+   verifyToken()
+   },[])
   const handleOptionChange = (index, optionIndex, value) => {
     const newQuestions = [...questionsAndOptions];
     newQuestions[index].Options[optionIndex] = value;

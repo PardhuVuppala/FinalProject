@@ -15,6 +15,24 @@ const TestWindow = () => {
   const [countdown, setCountdown] = useState(10); // Timer countdown state
 
   useEffect(() => {
+    const token = Cookies.get("token");
+    const role = Cookies.get("role");
+    const Employee_id = Cookies.get('Employee_id');
+    //token verifucation
+    const verifyToken = async () => {
+      try {
+        const response = await axios.get("http://localhost:1200/Employee/is-verify", {
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        });
+     
+      } catch (error) {
+        console.error(error);
+        navigate("/");
+      }
+    };
     const fetchExamQuestions = async () => {
       try {
         const response = await axios.get(`http://localhost:1200/Assessment/assessment/${examId}`);
@@ -26,7 +44,7 @@ const TestWindow = () => {
         setLoading(false);
       }
     };
-
+    verifyToken()
     fetchExamQuestions();
   }, [examId]);
 

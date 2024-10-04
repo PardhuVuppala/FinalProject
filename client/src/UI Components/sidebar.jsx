@@ -11,7 +11,7 @@ export default function sidebar() {
     useEffect(()=>{
      setName(Cookies.get("name"))
      setRole(Cookies.get("role"))
-     console.log(name);
+    
 
     },[])
     const HandleLogout =(e)=>
@@ -39,24 +39,24 @@ export default function sidebar() {
     Dashboard
         </Link>
         {role === 'admin' && (<Link to="/CertificationData" className="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700" style={{ textDecoration: 'none' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h16v16H4z M8 8l8 8 M16 8l-8 8" />
+            </svg>
                 Certification Data
         </Link> )}
 
         {role === 'admin' && (<Link to="/QuizForm" className="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700" style={{ textDecoration: 'none' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5l3 3 5-5M9 12l2 2 4-4M21 12v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6m16-8h-4a2 2 0 00-2 2v2m0 4v2a2 2 0 002 2h4" />
+            </svg>
            Assessment Creation
         </Link> )}
 
-        {role === 'admin' && (<Link to="/GraphicalAnalasis" className="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700" style={{ textDecoration: 'none' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                Graphical Analasis
+        {role === 'admin' && (<Link to="/TestAcceptreject" className="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700" style={{ textDecoration: 'none' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h3m0 0h3m-6 0v3m0-3v-3m6 6v3m0-3v-3m-9-5V6a2 2 0 012-2h6a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+            </svg>
+            Test Results
         </Link> )}
 
         {role === 'user' && (<Link to="/SkillTest" className="flex items-center px-4 py-2 mt-2 text-gray-100 hover:bg-gray-700" style={{ textDecoration: 'none' }}>

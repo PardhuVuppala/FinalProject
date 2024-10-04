@@ -141,10 +141,104 @@ const getSkillScoreStatistics = async (req, res) => {
   }
 };
 
+const getTopThreeEmployees = async (req, res) => {
+  try {
+    const topEmployees = await prisma.employee.findMany({
+      include: {
+        Certification: true, // Include certifications
+      },
+      where: {
+        NOT: {
+          role: 'admin', // Exclude employees with the role of admin
+        },
+      },
+      orderBy: {
+        Certification: {
+          _count: 'desc', // Order by the count of certifications
+        },
+      },
+      take: 3, // Take the top three employees
+    });
 
+    // Map the response to include only necessary fields
+    const result = topEmployees.map(employee => ({
+      id: employee.id,
+      name: employee.employeeName,
+      email: employee.employeeEmail,
+      certificationsCount: employee.Certification.length,
+    }));
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching top employees:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the top employees.' });
+  }
+};
+
+
+
+const getTopEmployeeBySkillsetAndAverage = async (req, res) => {
+  try {
+    // Get the employee with the highest skillset count
+    const topSkillsetEmployee = await prisma.employee.findMany({
+      where: {
+        NOT: {
+          role: 'admin', // Exclude employees with the role of admin
+        },
+      },
+      include: {
+        Skillset: true, // Include skillset to count the elements
+      },
+      orderBy: {
+        Skillset: {
+          _count: 'desc', // Order by the count of skills
+        },
+      },
+      take: 1, // Take the top employee
+    });
+
+    // If no employee found
+    if (!topSkillsetEmployee.length) {
+      return res.status(404).json({ error: 'No employees found.' });
+    }
+
+    const topEmployee = topSkillsetEmployee[0];
+
+    // Calculate the average skill score for the top employee
+    const skillScores = await prisma.skillScore.findMany({
+      where: {
+        employeeId: topEmployee.id,
+        NOT: {
+          Employee: {
+            role: 'admin', // Exclude admins again, just in case
+          },
+        },
+      },
+    });
+
+    const totalScore = skillScores.reduce((acc, score) => acc + score.testScore, 0);
+    const averageScore = skillScores.length ? totalScore / skillScores.length : 0;
+
+    // Count the number of skills in the Skillset array
+    const skillCount = topEmployee.Skillset.reduce((acc, skillset) => {
+      return acc + skillset.skillSet.length; // Count the elements in skillSet array
+    }, 0);
+
+    res.status(200).json({
+      name: topEmployee.employeeName,
+      skillsetCount: skillCount, // Total number of skills
+      averageSkillScore: averageScore.toFixed(2), // Format to 2 decimal places
+    });
+  } catch (error) {
+    console.error('Error fetching top employee:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the top employee.' });
+  }
+};
 
 module.exports = {
   getCourseStatistics,
   getSkillStatistics,
-  getSkillScoreStatistics
+  getSkillScoreStatistics,
+  getTopThreeEmployees,
+  getTopEmployeeBySkillsetAndAverage
 }

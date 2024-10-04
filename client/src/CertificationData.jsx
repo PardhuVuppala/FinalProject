@@ -1,13 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from './UI Components/sidebar';
+import { useNavigate } from 'react-router-dom';
+import Cookies from "js-cookie";
 
 export default function CertificationData() {
   const [certifications, setCertifications] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const Navigate = useNavigate()
 
   useEffect(() => {
     // Fetch certifications visible to admin
+
+
+    const token = Cookies.get("token");
+    const role = Cookies.get("role");
+    const Employee_id = Cookies.get('Employee_id');
+    //token verifucation
+    const verifyToken = async () => {
+      try {
+        const response = await axios.get("http://localhost:1200/Employee/is-verify", {
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        });
+     
+      } catch (error) {
+        console.error(error);
+        Navigate("/");
+      }
+    };
     const fetchCertifications = async () => {
       try {
         const response = await axios.get('http://localhost:1200/certificate/certificationsDetails');
@@ -17,7 +40,7 @@ export default function CertificationData() {
         console.error('Error fetching certifications:', error);
       }
     };
-
+    verifyToken();
     fetchCertifications();
   }, []);
 

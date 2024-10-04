@@ -8,6 +8,7 @@ import TestWindow from './TestWindow.jsx';
 import CertificationData from './CertificationData.jsx';
 import QuizForm from './QuizForm.jsx';
 import GraphicalAnalasis from './GraphicalAnalasisForCertification.jsx';
+import TestAcceptreject from './TestAcceptreject.jsx';
 function App() {
 
   return (
@@ -22,6 +23,7 @@ function App() {
        <Route path='/CertificationData' element={<CertificationData/>}/>
        <Route path='/QuizForm' element={<QuizForm/>}/>
        <Route path='/GraphicalAnalasis' element={<GraphicalAnalasis/>}/>
+       <Route path='/TestAcceptreject' element={<TestAcceptreject/>}/>
       </Routes>
       </BrowserRouter>
     </div>
