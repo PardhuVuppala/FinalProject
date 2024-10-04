@@ -86,6 +86,7 @@ const updateSkillScoreStatus = async (req, res) => {
       },
       data: { status: status }, // Update the status field
     });
+    console.log(updateRequest)
 
     // Check if the status is "accepted"
     if (status === "accepted") {

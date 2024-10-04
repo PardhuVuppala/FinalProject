@@ -182,6 +182,7 @@ function dashboard() {
         try {
           const response = await axios.post('http://localhost:1200/newskill/skillsets', data);
           console.log('Skillset created:', response.data);
+          notify("Skillset Request Added")
         } 
         catch (error) {
           if (error.response && error.response.status === 400) {
@@ -221,11 +222,15 @@ function dashboard() {
 
 
 
-  const handleReject = async (id) => {
+  const handleReject = async (id,skill,employeeId,courseDepartment) => {
     try {
       await axios.put(`http://localhost:1200/skillScore/update/${id}`, {
-        status: 'rejected'
+        status: 'rejected',
+        skill,
+        employeeId,
+        courseDepartment
       });
+      
       // Update the local state after rejection
       setSkillScores((prevScores) =>
         prevScores.map((score) => (score.id === id ? { ...score, status: 'rejected' } : score))
@@ -770,7 +775,7 @@ else if(role==="admin")
                               </button>
                               <button
                                 className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
-                                onClick={() => handleReject(score.id)}
+                                onClick={() => handleReject(score.id, score.skill, score.employeeId ,score.courseDepartment)}
                               >
                                 Reject
                               </button>
