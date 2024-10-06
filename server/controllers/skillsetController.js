@@ -1,55 +1,89 @@
 const skillsetModel =require('../models/skillsetModel')
 const assessmentModel = require('../models/assessmentModel');
 const skillScoreModel = require('../models/skillScoreModel');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-// Create new skillset without certification
 const createSkillset = async (req, res) => {
   const { employeeId, skill, description, status } = req.body;
 
   try {
-    // Fetch the assessment details based on the skill (courseName)
     const existingSkillset = await skillsetModel.existingSkillRequest({
       employeeId,
       skill,
-      status: ['pending', 'accepted'], // Check for both pending and accepted statuses
+      status: ['pending', 'accepted'], 
     });
 
     if (existingSkillset) {
       return res.status(400).json({ message: 'Skillset request is already pending or accepted for this skill.' });
     }
 
-    console.log(existingSkillset)
+    console.log(existingSkillset);
+
     const assessment = await assessmentModel.findAssessmentByCourseName({
       where: { courseName: skill },
     });
+
     console.log(assessment);
 
-
-    // Check if the assessment exists
     if (!assessment) {
       return res.status(404).json({ message: 'Assessment not found for the provided skill' });
     }
 
-    // Create the new skillset without certification
+    const courses = await prisma.courseModule.findMany({
+      where: { 
+        courseName: skill 
+      },
+    });
+    
+    if (!courses || courses.length === 0) {
+      return res.status(404).json({ message: 'Course not found for the provided skill.' });
+    }
+    
+    const course = courses[0];
+    
+    const existingCourse = await prisma.employeeCourse.findFirst({
+      where: {
+    
+          EmployeeID: employeeId,
+          courseid: course.id, 
+      },
+    });
+    
+    if (existingCourse) {
+      return res.status(400).json({ message: 'This course is already added for the employee.' });
+    }
+    
+    const newEmployeeCourse = await prisma.employeeCourse.create({
+      data: {
+        EmployeeID: employeeId,
+        courseid: course.id,
+        modules: course.modules, 
+        courseName : course.courseName,
+        courseDepartment : course.courseDepartment,
+        imageurl : course.imageurl,
+        percentage_completed: 0, 
+        timespend: 0, 
+      },
+    });
+
     const newSkillset = await skillsetModel.createSkillset({ employeeId, skill, description, status });
 
-    // Create the skill score entry based on the assessment found
     const newSkillScore = await skillScoreModel.createSkillScore({
       employeeId,
-      assessmentId: assessment.id, // Link to the found assessment
+      assessmentId: assessment.id, 
       courseName: assessment.courseName,
       skill,
       courseDepartment: assessment.courseDepartment,
-      testName: skill, // Set based on your logic
-      testScore: 0, // Default score or calculated value
+      testName: skill, 
+      testScore: 0, 
       status,
-      noOfAttempts: 1, // Default or calculated attempts
+      noOfAttempts: 1, 
     });
 
-    // Return both skillset and skill score details
-    res.status(201).json({ newSkillset, newSkillScore });
+    res.status(201).json({ newSkillset, newSkillScore, newEmployeeCourse });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ message: 'Error creating skillset', error: error.message });
   }
 };

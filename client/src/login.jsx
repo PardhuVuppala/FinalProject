@@ -228,7 +228,7 @@ const FormSubmit = async(e) =>
        <ToastContainer />
        {homeScreen &&( 
       <div className='flex items-center justify-center'>
-        <div className='relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0'>
+        <div className='relative flex flex-col m-6 space-y-8 bg-gray-50 shadow-2xl rounded-2xl md:flex-row md:space-y-0'>
           <div className='flex flex-col justify-center p-12 md:px-14 md:py-8'>
             <span className='mb-1 text-5xl text-center font-bold'>Login</span>
             <form className="mt-4 space-y-4" onSubmit={onSubmitForm}>
@@ -275,7 +275,7 @@ const FormSubmit = async(e) =>
             </div>
           </div>
           <div className='relative'>
-            <img src={Limage} alt="Background" className='w-[400px] h-full hidden rounded-r-2xl md:block object-cover bg-[#F9F9F9]' />
+            <img src="https://www.cabem.com/wp-content/uploads/2022/05/Competency-The-Big-3.jpg" alt="Background" className='w-[400px] h-full hidden rounded-r-2xl md:block object-cover bg-[#F9F9F9]' />
             <div className='absolute hidden bottom-10 right-0 p-6 md:block'>
               {/* <span className='text-black text-xl'> 
           
@@ -294,7 +294,7 @@ const FormSubmit = async(e) =>
         >
           <div className="relative p-4 w-full max-w-3xl">
             <div className="relative flex flex-col md:flex-row space-y-8 md:space-y-0 shadow-2xl rounded-2xl">
-              <div className="p-4 md:p-10 flex-grow bg-white shadow-2xl rounded-l-2xl">
+              <div className="p-4 md:p-10 flex-grow bg-gray-50 shadow-2xl rounded-l-2xl">
                 <button
                   onClick={toggleModal}
                   type="button"
@@ -332,7 +332,7 @@ const FormSubmit = async(e) =>
             </div>
              </div>
              <div className='relative w-full md:w-[400px]'>
-              <img src={Limage} alt="Background" className='w-full h-full rounded-r-2xl md:block object-cover' />
+              <img src="https://www.cabem.com/wp-content/uploads/2022/05/Competency-The-Big-3.jpg" alt="Background" className='w-full h-full rounded-r-2xl md:block object-cover' />
             </div>
             </div>
           </div>
@@ -348,7 +348,7 @@ const FormSubmit = async(e) =>
         >
           <div className="relative p-4 w-full max-w-3xl ">
             <div className="relative flex flex-col md:flex-row space-y-8 md:space-y-0 shadow-2xl rounded-2xl">
-              <div className="p-4 md:p-10 flex-grow bg-white shadow-2xl rounded-l-2xl">
+              <div className="p-4 md:p-10 flex-grow bg-gray-50 shadow-2xl rounded-l-2xl">
                 <button
                   onClick={OTPModal}
                   type="button"
@@ -392,7 +392,7 @@ const FormSubmit = async(e) =>
               </div>
              </div>
              <div className='relative w-full md:w-[400px]'>
-              <img src={Limage} alt="Background" className='w-full h-full rounded-r-2xl md:block object-cover' />
+              <img src="https://www.cabem.com/wp-content/uploads/2022/05/Competency-The-Big-3.jpg" alt="Background" className='w-full h-full rounded-r-2xl md:block object-cover' />
             </div>
             </div>
           </div>
@@ -408,7 +408,7 @@ const FormSubmit = async(e) =>
       >
         <div className="relative p-4 w-full max-w-3xl ">
           <div className="relative flex flex-col md:flex-row space-y-8 md:space-y-0 shadow-2xl rounded-2xl ">
-            <div className="p-4 md:p-10 flex-grow bg-white shadow-2xl rounded-l-2xl">
+            <div className="p-4 md:p-10 flex-grow bg-gray-50 shadow-2xl rounded-l-2xl">
               <button
                 onClick={PasswordModel}
                 type="button"

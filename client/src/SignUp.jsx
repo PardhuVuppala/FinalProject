@@ -97,7 +97,7 @@ export default function SignUp() {
     >
       <ToastContainer />
       <div className="flex items-center justify-center min-h-screen bg-grey-100">
-        <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl  rounded-2xl md:flex-row md:space-y-0">
+        <div className="relative flex flex-col m-6 space-y-8 bg-gray-50 shadow-2xl  rounded-2xl md:flex-row md:space-y-0">
           <div className="flex flex-col justify-center md:px-14 md:py-8 p-10">
             <span className="mb-2 text-5xl text-center font-bold">Sign Up</span>
             <form onSubmit={FormSubmit} method="POST">
@@ -253,9 +253,9 @@ export default function SignUp() {
           </div>
           <div className="relative flex items-center justify-center">
             <img
-              src={Limage}
+              src="https://www.cabem.com/wp-content/uploads/2022/05/Competency-The-Big-3.jpg"
               alt="Image"
-              className="w-[600px] h-[800px] rounded-r-2xl md:block mr-4"
+              className="w-[550px] h-[600px] rounded-r-2xl md:block"
             />
           </div>
         </div>

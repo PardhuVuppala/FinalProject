@@ -129,7 +129,7 @@ const TestWindow = () => {
                           className="hidden"
                         />
                         <span className={`flex items-center justify-center w-5 h-5 rounded-full border border-gray-400 
-                          ${selectedAnswers[index] === option ? 'bg-blue-500' : 'bg-white'}
+                          ${selectedAnswers[index] === option ? 'bg-primary-100' : 'bg-white'}
                         `}></span>
                         <span className="ml-2">{option}</span>
                       </label>
@@ -139,7 +139,7 @@ const TestWindow = () => {
               ))}
               <button
                 onClick={handleSubmit}
-                className="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600 transition duration-200"
+                className="bg-primary-100 text-white px-4 py-2 rounded mt-4transition duration-200"
               >
                 Submit Test
               </button>
@@ -169,7 +169,7 @@ const TestWindow = () => {
           <div className="mt-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
             <button
               onClick={() => navigate('/SkillTest')}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
+              className="bg-primary-100 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
             >
               View Tests
             </button>

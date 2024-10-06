@@ -3,12 +3,14 @@ import Login from './login.jsx';
 import Dashboard from './dashboard.jsx';
 import SignUp from './SignUp.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import SkillTest from './SKillTest.jsx';
+import SkillTest from './SkillTest.jsx';
 import TestWindow from './TestWindow.jsx';
 import CertificationData from './CertificationData.jsx';
 import QuizForm from './QuizForm.jsx';
 import GraphicalAnalasis from './GraphicalAnalasisForCertification.jsx';
 import TestAcceptreject from './TestAcceptreject.jsx';
+import Courses from './Courses.jsx';
+import CoursesAdded from './CoursesAdded.jsx';
 function App() {
 
   return (
@@ -24,6 +26,9 @@ function App() {
        <Route path='/QuizForm' element={<QuizForm/>}/>
        <Route path='/GraphicalAnalasis' element={<GraphicalAnalasis/>}/>
        <Route path='/TestAcceptreject' element={<TestAcceptreject/>}/>
+       <Route path='/ViewCourses' element={<Courses/>}/>
+       <Route path='/coursesAdd' element={<CoursesAdded/>}/>
+
       </Routes>
       </BrowserRouter>
     </div>

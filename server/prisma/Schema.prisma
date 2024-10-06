@@ -28,6 +28,8 @@ model Employee {
   Certification  Certification[]           // Relation with Certification
   SkillScore     SkillScore[]              // Relation with SkillScore
   UpdateSkillsetWithoutCertification UpdateSkillsetWithoutCertification[]
+  EmployeeCourses EmployeeCourse[]                     // If you want to track the courses an employee has taken
+
 }
 
 model Skillset {
@@ -68,6 +70,19 @@ model Certification {
   @@index([employeeId])  // Index for employeeId for optimization
 }
 
+model CourseModule {
+  id        String  @id @default(uuid())
+  imageurl  String
+  courseName String 
+  skill      String
+  courseDepartment String
+  modules     Json
+
+
+  EmployeeCourses EmployeeCourse[]                     // If you want to track the courses an employee has taken
+
+}
+
 model SkillScore {
   id             String    @id @default(uuid())  // UUID for the primary key
   employeeId     String    // Foreign key to Employee
@@ -85,3 +100,24 @@ model SkillScore {
 
   @@index([employeeId, assessmentId])  // Index for employeeId and assessmentId for optimization
 }
+
+
+
+model EmployeeCourse {
+  id                 String    @id @default(uuid())
+  EmployeeID         String
+  courseid           String
+  imageurl           String
+  courseDepartment   String
+  courseName         String
+  modules            Json
+  percentage_completed Float?  @default(0)
+  timespend           Int       // Assuming this is stored as an integer representing time in minutes or seconds
+
+  // Optionally, you can define relations if you have Employee and Course models
+  Employee           Employee  @relation(fields: [EmployeeID], references: [id])
+  CourseModule       CourseModule    @relation(fields: [courseid], references: [id])
+
+  @@index([EmployeeID, courseid]) // Optional index for performance on queries
+}
+

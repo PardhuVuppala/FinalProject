@@ -63,7 +63,7 @@ export default function SKillTest() {
       <div className=" h-full">
       <div className="overflow-x-auto">
       <table className="min-w-full border-collapse border border-gray-300 shadow-lg rounded-lg overflow-hidden">
-        <thead className="bg-gray-100">
+        <thead className="bg-primary-100 text-white">
           <tr>
             <th className="border border-gray-300 px-4 py-2 text-left">Test Name</th>
             <th className="border border-gray-300 px-4 py-2 text-left">Score</th>
