@@ -12,13 +12,17 @@ const TestWindow = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [results, setResults] = useState(null);
   const [score, setScore] = useState(0);
-  const [countdown, setCountdown] = useState(10); // Timer countdown state
+  const [countdown, setCountdown] = useState(10); // Countdown for post-submit
+  const [testName, setTestname] = useState("");
+  
+  const [timeLeft, setTimeLeft] = useState(20 * 60); // Timer for 20 mins in seconds
 
   useEffect(() => {
     const token = Cookies.get("token");
     const role = Cookies.get("role");
     const Employee_id = Cookies.get('Employee_id');
-    //token verifucation
+    
+    // Token verification
     const verifyToken = async () => {
       try {
         const response = await axios.get("http://localhost:1200/Employee/is-verify", {
@@ -33,10 +37,12 @@ const TestWindow = () => {
         navigate("/");
       }
     };
+    
     const fetchExamQuestions = async () => {
       try {
         const response = await axios.get(`http://localhost:1200/Assessment/assessment/${examId}`);
         setQuestions(response.data.questionsAndOptions);
+        setTestname(response.data.courseName);
       } catch (error) {
         console.error('Error fetching exam questions:', error);
         setError('Failed to fetch exam questions. Please try again later.');
@@ -44,8 +50,37 @@ const TestWindow = () => {
         setLoading(false);
       }
     };
-    verifyToken()
+
+    const enterFullScreen = () => {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { // Safari
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { // IE/Edge
+        elem.msRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) { // Firefox
+        document.mozRequestFullScreen();
+      }
+    };
+
+    enterFullScreen(); // Enter full screen mode
+    verifyToken();
     fetchExamQuestions();
+    
+    // Timer logic for the entire test
+    const testTimer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime === 1) {
+          clearInterval(testTimer);
+          handleSubmit(); // Auto-submit when time runs out
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(testTimer); // Cleanup the interval on component unmount
+
   }, [examId]);
 
   const handleAnswerSelect = (questionIndex, selectedOption) => {
@@ -54,6 +89,20 @@ const TestWindow = () => {
       [questionIndex]: selectedOption,
     });
   };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        handleSubmit();
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [questions]);
 
   const handleSubmit = async () => {
     const newResults = questions.map((question, index) => {
@@ -84,7 +133,7 @@ const TestWindow = () => {
       setError('Failed to update score. Please try again later.');
     }
 
-    // Start the countdown after submitting
+    // Start the post-submit countdown
     startCountdown();
   };
 
@@ -100,12 +149,23 @@ const TestWindow = () => {
     }, 1000);
   };
 
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
   if (loading) return <p className="text-center">Loading questions...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Test Window</h1>
+      <h1 className="text-2xl font-bold mb-4">{testName}</h1>
+      
+      {/* Display the time left for the entire test */}
+      <div className="mb-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
+        <h2 className="font-semibold text-lg">Time Left: {formatTime(timeLeft)} <span className='text-red-500'>Don't use Esc or Exit from Window if you do automatically submits</span></h2>
+      </div>
 
       {!results ? (
         <div>
@@ -139,7 +199,7 @@ const TestWindow = () => {
               ))}
               <button
                 onClick={handleSubmit}
-                className="bg-primary-100 text-white px-4 py-2 rounded mt-4transition duration-200"
+                className="bg-primary-100 text-white px-4 py-2 rounded mt-4 transition duration-200"
               >
                 Submit Test
               </button>
@@ -173,7 +233,7 @@ const TestWindow = () => {
             >
               View Tests
             </button>
-            <p className="mt-2 text-gray-500">Redirecting in {countdown} seconds...</p>
+            <p className="mt-2">Redirecting in {countdown} seconds...</p>
           </div>
         </div>
       )}
