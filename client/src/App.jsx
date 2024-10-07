@@ -11,6 +11,7 @@ import GraphicalAnalasis from './GraphicalAnalasisForCertification.jsx';
 import TestAcceptreject from './TestAcceptreject.jsx';
 import Courses from './Courses.jsx';
 import CoursesAdded from './CoursesAdded.jsx';
+import AnalysisTime from './GraphicalAnalysis.jsx';
 function App() {
 
   return (
@@ -28,6 +29,7 @@ function App() {
        <Route path='/TestAcceptreject' element={<TestAcceptreject/>}/>
        <Route path='/ViewCourses' element={<Courses/>}/>
        <Route path='/coursesAdd' element={<CoursesAdded/>}/>
+       <Route path="/AnalysisTime" element={<AnalysisTime/>}/>
 
       </Routes>
       </BrowserRouter>

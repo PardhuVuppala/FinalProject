@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from './UI Components/sidebar';
 import { FaVideo, FaBookOpen, FaChalkboardTeacher, FaProjectDiagram } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import Cookies from "js-cookie";
+import axios from 'axios';
+
+
+
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
@@ -8,8 +14,31 @@ export default function Courses() {
   const [selectedModule, setSelectedModule] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+
 
   useEffect(() => {
+    const token = Cookies.get("token");
+    const employeeId = Cookies.get('Employee_id');
+
+
+    const verifyToken = async () => {
+        try {
+          await axios.get("http://localhost:1200/Employee/is-verify", {
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          });
+          fetchCourses(); // Fetch courses after verifying the token
+        } catch (error) {
+          console.error(error);
+          navigate("/"); // Changed Navigate to navigate for better readability
+        }
+      };
+
+      
     const fetchCourses = async () => {
       try {
         const response = await fetch('http://localhost:1200/courses/getdetails');
@@ -19,7 +48,7 @@ export default function Courses() {
         console.error('Error fetching courses:', error);
       }
     };
-
+    verifyToken()
     fetchCourses();
   }, []);
 
@@ -42,7 +71,7 @@ export default function Courses() {
   return (
     <div className="flex">
       <Sidebar className="w-1/4" />
-      <div className="grid grid-cols-4 gap-4 h-min p-6">
+      <div className="grid grid-cols-5 gap-2 h-min p-6">
         {courses.map((course) => (
       <div
       key={course.id}
@@ -70,21 +99,16 @@ export default function Courses() {
             <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-5xl p-6 relative">
               <header className="flex justify-between items-center mb-4 border-b border-gray-300 pb-2">
                 <h2 className="text-2xl font-semibold">{selectedCourse.courseName}</h2>
-                <button
-                  className="text-gray-500 hover:text-gray-800 text-2xl"
-                  onClick={closeModal}
-                >
-                  &times;
-                </button>
+                
               </header>
 
               <div className="flex">
                 {/* Module Names Section */}
                 <ul className="w-1/3 border-r border-gray-300 p-4 space-y-4 flex flex-col items-center">
                   {Object.keys(selectedCourse.modules).map((moduleKey) => (
-                    <li key={moduleKey} className="flex items-center w-full justify-start">
+                    <li key={moduleKey} className="flex items-center w-full justify-start ">
                       <button
-                        className={`flex items-center bg-gray-200 rounded-lg px-4 py-2 w-full justify-start hover:bg-gray-300 transition duration-200 ${
+                        className={`flex items-center bg-primary-100 rounded-lg px-4 py-2 w-full justify-start text-white transition duration-200 ${
                           selectedModule && selectedModule.key === selectedCourse.modules[moduleKey].key ? 'font-bold' : ''
                         }`}
                         onClick={() => handleModuleClick(selectedCourse.modules[moduleKey])}

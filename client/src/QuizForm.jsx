@@ -93,10 +93,10 @@ const AssessmentForm = () => {
       <ToastContainer />
       <Sidebar className="w-1/4 h-screen bg-gray-800" />
       <div className="flex-1 p-6 bg-gray-100 overflow-hidden">
-        <div className="container mx-auto bg-white rounded-lg shadow-lg p-8 h-full overflow-y-auto">
+        <div className="container mx-auto bg-gray-100 rounded-lg shadow-lg p-8 h-full overflow-y-auto">
           <h2 className="text-2xl font-semibold text-gray-700 mb-6">Create Assessment</h2>
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
+            <div className="mb-4 ">
               <label className="block text-sm font-medium text-gray-600 mb-1">Course Name:</label>
               <input
                 type="text"
@@ -120,7 +120,7 @@ const AssessmentForm = () => {
             </div>
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Questions:</h3>
             {questionsAndOptions.map((q, index) => (
-              <div key={index} className="mb-4 border p-3 border-gray-300 rounded-lg shadow-sm bg-gray-50">
+              <div key={index} className="mb-4 border p-3 border-gray-300 rounded-lg shadow-sm bg-gray-100">
                 <label className="block text-sm font-medium text-gray-600 mb-1">Question:</label>
                 <input
                   type="text"

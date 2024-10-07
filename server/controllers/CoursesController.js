@@ -94,7 +94,7 @@ const getCoursesByEmployeeId = async (req, res) => {
 
 
   const updateCourseModuleCompletion = async (req, res) => {
-    const { employeeId, courseId, modules, percentage_completed } = req.body;
+    const { employeeId, courseId, modules, percentage_completed, timespend } = req.body;
     console.log(employeeId, courseId, modules, percentage_completed);
     
     try {
@@ -107,8 +107,9 @@ const getCoursesByEmployeeId = async (req, res) => {
     
         },
         data: {
-          modules: modules,  // Update modules with new completion status
-          percentage_completed: percentage_completed,  // Update the percentage completed
+          modules: modules,  
+          percentage_completed: percentage_completed, 
+          timespend: timespend
         },
       });
   

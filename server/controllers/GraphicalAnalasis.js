@@ -235,10 +235,120 @@ const getTopEmployeeBySkillsetAndAverage = async (req, res) => {
   }
 };
 
+const getCourseCount = async (req, res) => {
+  try {
+      const courseCount = await prisma.employeeCourse.groupBy({
+          by: ['courseName'],
+          _count: {
+              courseName: true,
+          },
+      });
+      res.status(200).json(courseCount);
+  } catch (error) {
+      console.error('Error fetching course count:', error);
+      res.status(500).json({ message: 'Server error fetching course count' });
+  }
+};
+
+// 2. Get the total time spent on each course
+const getTimeSpentPerCourse = async (req, res) => {
+  try {
+      const totalTimeSpent = await prisma.employeeCourse.groupBy({
+          by: ['courseName'],
+          _sum: {
+              timespend: true,
+          },
+      });
+      res.status(200).json(totalTimeSpent);
+  } catch (error) {
+      console.error('Error fetching time spent per course:', error);
+      res.status(500).json({ message: 'Server error fetching time spent' });
+  }
+};
+
+// 3. Get all employees and the courses they have taken
+const getEmployeeCourses = async (req, res) => {
+  try {
+      const employeesWithCourses = await prisma.employee.findMany({
+          include: {
+              EmployeeCourses: {
+                  select: {
+                      courseName: true,
+                      timespend: true,
+                      percentage_completed: true,
+                  },
+              },
+          },
+      });
+      res.status(200).json(employeesWithCourses);
+  } catch (error) {
+      console.error('Error fetching employee courses:', error);
+      res.status(500).json({ message: 'Server error fetching employee courses' });
+  }
+};
+
+
+const getAllEmployees = async (req, res) => {
+  try {
+    const employees = await prisma.employee.findMany({
+      where: {
+        role: 'user', // Filter for employees with the role of 'user'
+      },
+      select: {
+        id: true, // Employee ID
+        employeeName: true, // Employee Name
+        Skillset: { // Fetch related skill sets
+          select: {
+            skillSet: true, // Fetch the skill set
+            specialized: true, // Fetch specialized skills
+          },
+        },
+      },
+    });
+    res.status(200).json(employees);
+  } catch (error) {
+    console.error('Error fetching employees with skills:', error);
+    res.status(500).json({ message: 'Server error fetching employees with skills' });
+  }
+};
+
+
+const fetchEmployeeSkills = async (req, res) => {
+  const { employeeId } = req.params;
+
+  try {
+    // Fetch employee skills from the database
+    const employeeSkillset = await prisma.skillset.findMany({
+      where: { employeeId: employeeId },  // Fetch all skillsets for the employee
+    });
+
+    // Check if any skill sets were found
+    if (!employeeSkillset || employeeSkillset.length === 0) {
+      return res.status(404).json({ message: 'No skill set found for this employee.' });
+    }
+
+    // Respond with the skills and specialization
+    return res.json({
+      skillSet: employeeSkillset[0].skillSet, // Assuming we want the first entry's skillSet
+      specialized: employeeSkillset[0].specialized, // Assuming we want the first entry's specialized skills
+    });
+  } catch (error) {
+    console.error('Error fetching employee skills:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
 module.exports = {
   getCourseStatistics,
   getSkillStatistics,
   getSkillScoreStatistics,
   getTopThreeEmployees,
-  getTopEmployeeBySkillsetAndAverage
+  getTopEmployeeBySkillsetAndAverage,
+  getCourseCount,
+  getTimeSpentPerCourse,
+  getEmployeeCourses,
+  getAllEmployees,
+  fetchEmployeeSkills
 }
