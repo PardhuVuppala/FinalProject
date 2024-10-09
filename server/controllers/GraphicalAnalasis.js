@@ -235,36 +235,53 @@ const getTopEmployeeBySkillsetAndAverage = async (req, res) => {
   }
 };
 
+// Get course count for a specific employee
 const getCourseCount = async (req, res) => {
+  const { employeeId } = req.params; // Get employeeId from route parameters
+
   try {
-      const courseCount = await prisma.employeeCourse.groupBy({
-          by: ['courseName'],
-          _count: {
-              courseName: true,
-          },
-      });
-      res.status(200).json(courseCount);
+    console.log(employeeId)
+    // Build the query conditionally based on whether employeeId is provided
+    const whereCondition = employeeId ? { EmployeeID: employeeId } : {};
+
+    const courseCount = await prisma.employeeCourse.groupBy({
+      by: ['courseName'],
+      _count: {
+        courseName: true,
+      },
+      where: whereCondition, // Use the constructed where condition
+    });
+    
+    res.status(200).json(courseCount);
   } catch (error) {
-      console.error('Error fetching course count:', error);
-      res.status(500).json({ message: 'Server error fetching course count' });
+    console.error('Error fetching course count:', error);
+    res.status(500).json({ message: 'Server error fetching course count' });
   }
 };
 
-// 2. Get the total time spent on each course
 const getTimeSpentPerCourse = async (req, res) => {
+  const { employeeId } = req.params; // Get employeeId from route parameters
+
   try {
-      const totalTimeSpent = await prisma.employeeCourse.groupBy({
-          by: ['courseName'],
-          _sum: {
-              timespend: true,
-          },
-      });
-      res.status(200).json(totalTimeSpent);
+    // Build the query conditionally based on whether employeeId is provided
+    const whereCondition = employeeId ? { EmployeeID: employeeId } : {};
+
+    const totalTimeSpent = await prisma.employeeCourse.groupBy({
+      by: ['courseName'],
+      _sum: {
+        timespend: true,
+      },
+      where: whereCondition, // Use the constructed where condition
+    });
+
+    res.status(200).json(totalTimeSpent);
   } catch (error) {
-      console.error('Error fetching time spent per course:', error);
-      res.status(500).json({ message: 'Server error fetching time spent' });
+    console.error('Error fetching time spent per course:', error);
+    res.status(500).json({ message: 'Server error fetching time spent' });
   }
 };
+
+
 
 // 3. Get all employees and the courses they have taken
 const getEmployeeCourses = async (req, res) => {

@@ -13,12 +13,10 @@ const createSkillset = async (req, res) => {
       skill,
       status: ['pending', 'accepted'], 
     });
-
     if (existingSkillset) {
       return res.status(400).json({ message: 'Skillset request is already pending or accepted for this skill.' });
     }
 
-    console.log(existingSkillset);
 
     const assessment = await assessmentModel.findAssessmentByCourseName({
       where: { courseName: skill },
@@ -50,22 +48,22 @@ const createSkillset = async (req, res) => {
       },
     });
     
-    if (existingCourse) {
-      return res.status(400).json({ message: 'This course is already added for the employee.' });
+    if (!existingCourse) {
+      const newEmployeeCourse = await prisma.employeeCourse.create({
+        data: {
+          EmployeeID: employeeId,
+          courseid: course.id,
+          modules: course.modules, 
+          courseName : course.courseName,
+          courseDepartment : course.courseDepartment,
+          imageurl : course.imageurl,
+          percentage_completed: 0, 
+          timespend: 0, 
+        },
+      });
     }
     
-    const newEmployeeCourse = await prisma.employeeCourse.create({
-      data: {
-        EmployeeID: employeeId,
-        courseid: course.id,
-        modules: course.modules, 
-        courseName : course.courseName,
-        courseDepartment : course.courseDepartment,
-        imageurl : course.imageurl,
-        percentage_completed: 0, 
-        timespend: 0, 
-      },
-    });
+   
 
     const newSkillset = await skillsetModel.createSkillset({ employeeId, skill, description, status });
 

@@ -8,23 +8,21 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
-
-
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function GraphicalAnalysis() {
   const Navigate = useNavigate();
   const [courseData, setCourseData] = useState([]);
-  const [skillData, setSkillData] = useState([]);
-  const [timeSpentData, setTimeSpentData] = useState([]); // State for time spent data
-  const [employees, setEmployees] = useState([]); // State for employees
-  const [selectedEmployee, setSelectedEmployee] = useState(''); // State for selected employee
-  const [employeeSkills, setEmployeeSkills] = useState([]); // State for selected employee's skills
-  const [employeeSpecialization, setEmployeeSpecialization] = useState([]); // State for selected employee's specialization
+  const [timeSpentData, setTimeSpentData] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [employeeSkills, setEmployeeSkills] = useState([]);
+  const [employeeSpecialization, setEmployeeSpecialization] = useState([]);
 
   useEffect(() => {
     const token = Cookies.get("token");
 
+    // Verify the user's token
     const verifyToken = async () => {
       try {
         await axios.get("http://localhost:1200/Employee/is-verify", {
@@ -39,9 +37,33 @@ export default function GraphicalAnalysis() {
       }
     };
 
-    const fetchCourseData = async () => {
+    // Fetch employee data
+    const fetchEmployees = async () => {
       try {
-        const response = await axios.get("http://localhost:1200/graphs/course-count", {
+        const response = await axios.get("http://localhost:1200/graphs/employees", {
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        });
+        setEmployees(response.data); // Set employees in state
+      } catch (error) {
+        console.error('Error fetching employees:', error);
+      }
+    };
+
+    verifyToken();
+    fetchEmployees();
+  }, [Navigate]);
+
+  // Fetch course count and time spent data based on selected employee
+  useEffect(() => {
+    const token = Cookies.get("token");
+      
+    const fetchCourseData = async (employeeId) => {
+      try {
+        console.log(employeeId);
+        const response = await axios.get(`http://localhost:1200/graphs/course-count/${employeeId || ''}`, {
           headers: {
             "Content-Type": "application/json",
             token: token,
@@ -52,24 +74,10 @@ export default function GraphicalAnalysis() {
         console.error('Error fetching course data:', error);
       }
     };
-
-    const fetchSkillData = async () => {
+    
+    const fetchTimeSpentData = async (employeeId) => {
       try {
-        const response = await axios.get("http://localhost:1200/graphs", {
-          headers: {
-            "Content-Type": "application/json",
-            token: token,
-          },
-        });
-        setSkillData(response.data);
-      } catch (error) {
-        console.error('Error fetching skill data:', error);
-      }
-    };
-
-    const fetchTimeSpentData = async () => {
-      try {
-        const response = await axios.get("http://localhost:1200/graphs/time-spent", {
+        const response = await axios.get(`http://localhost:1200/graphs/time-spent/${employeeId || ''}`, {
           headers: {
             "Content-Type": "application/json",
             token: token,
@@ -80,41 +88,40 @@ export default function GraphicalAnalysis() {
         console.error('Error fetching time spent data:', error);
       }
     };
+    
 
-    const fetchEmployees = async () => {
+    // Call both functions when the selectedEmployee changes
+    fetchCourseData(selectedEmployee);
+    fetchTimeSpentData(selectedEmployee);
+  }, [selectedEmployee]);
+
+  // Fetch employee skills when the selected employee changes
+  useEffect(() => {
+    const token = Cookies.get("token");
+
+    const fetchEmployeeSkills = async (employeeId) => {
+      console.log(employeeId)
       try {
-        const response = await axios.get("http://localhost:1200/graphs/employees", {
+        const response = await axios.get(`http://localhost:1200/graphs/skills/${employeeId}`, {
           headers: {
             "Content-Type": "application/json",
             token: token,
           },
         });
-        setEmployees(response.data); // Set employees data
+        setEmployeeSkills(response.data.skillSet);
+        setEmployeeSpecialization(response.data.specialized);
       } catch (error) {
-        console.error('Error fetching employees:', error);
+        console.error('Error fetching employee skills:', error);
       }
     };
 
-    verifyToken();
-    fetchCourseData();
-    fetchTimeSpentData();
-    fetchEmployees(); // Fetch employee data
-  }, [Navigate]);
-
-  const fetchEmployeeSkills = async (employeeId) => {
-    try {
-      const response = await axios.get(`http://localhost:1200/graphs/skills/${employeeId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          token: Cookies.get("token"),
-        },
-      });
-      setEmployeeSkills(response.data.skillSet); // Assuming the response has a skillSet field
-      setEmployeeSpecialization(response.data.specialized); // Assuming the response has a specialized field
-    } catch (error) {
-      console.error('Error fetching employee skills:', error);
+    if (selectedEmployee) {
+      fetchEmployeeSkills(selectedEmployee);
+    } else {
+      setEmployeeSkills([]); // Clear skills if no employee is selected
+      setEmployeeSpecialization([]); // Clear specialization if no employee is selected
     }
-  };
+  }, [selectedEmployee]);
 
   const courseChartData = {
     labels: courseData.map(item => item.courseName),
@@ -144,77 +151,68 @@ export default function GraphicalAnalysis() {
 
   return (
     <div className='flex h-screen bg-gray-100'>
-    <Sidebar className="w-1/4" />
-    <div className='ml-6 w-3/4 flex flex-col h-full'>
-      {/* Dropdown for selecting an employee as a floating button */}
-      <div className="fixed top-4 right-4 z-10 bg-white shadow-lg p-4 rounded-lg">
-        <label className="block text-sm font-medium text-gray-700">Select Employee</label>
-        <select
-          className="block appearance-none w-full max-w-xs bg-white border border-gray-300 rounded-lg py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 transition duration-200 ease-in-out"
-          value={selectedEmployee}
-          onChange={(e) => {
-            setSelectedEmployee(e.target.value);
-            fetchEmployeeSkills(e.target.value); // Fetch skills when an employee is selected
-          }}
-        >
-          <option value="">Select an employee</option>
-          {employees.map((employee) => (
-            <option key={employee.id} value={employee.id}>
-              {employee.employeeName}
-            </option>
-          ))}
-        </select>
-      </div>
-  
-      <div className='grid grid-cols-2 gap-6 flex-grow mt-20'> {/* Added mt-20 to prevent overlap with dropdown */}
-        <div className="w-full h-1/2">
-          <h2 className="text-xl font-semibold mb-4">Course Enrollment Data</h2>
-          <Bar data={courseChartData} options={{ responsive: true }} />
-        </div>
-  
-        <div className="w-full h-1/2">
-          <h2 className="text-xl font-semibold mb-4">Time Spent on Courses</h2>
-          <Bar data={timeSpentChartData} options={{ responsive: true }} />
-        </div>
-  
-        <div className="w-full h-1/2 mt-6">
-          <h2 className="text-xl font-semibold mb-4">Employee Skills</h2>
-          {employeeSkills.length > 0 ? (
-           <ul className="list-disc pl-6">
-           {employeeSkills.map((skill, index) => (
-             <li key={index} className="flex items-center mb-1">
-               <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-1" />
-               <span>{skill}</span>
-             </li>
-           ))}
-         </ul>
-         
-
-            
-          ) : (
-            <p>No skills available for this employee.</p>
-          )}
-        </div>
-  
-        <div className="w-full h-1/2 mt-6">
-          <h2 className="text-xl font-semibold mb-4">Employee Specialization</h2>
-        
-          {employeeSpecialization.length > 0 ? (
-            <div className="list-disc pl-6">
-            {employeeSpecialization.map((spec, index) => (
-              <li key={index} className="flex items-center mb-1">
-                <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-1" />
-                <span>{spec}</span>
-              </li>
+      <Sidebar className="w-1/4" />
+      <div className='ml-6 w-3/4 flex flex-col h-full'>
+        <div className="fixed top-4 right-4 z-10 bg-white shadow-lg p-4 rounded-lg">
+          <label className="block text-sm font-medium text-gray-700">Select Employee</label>
+          <select
+            className="block appearance-none w-full max-w-xs bg-white border border-gray-300 rounded-lg py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 transition duration-200 ease-in-out"
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+          >
+            <option value="">Select an employee</option>
+            {employees.map((employee) => (
+              <option key={employee.id} value={employee.id}>
+                {employee.employeeName}
+              </option>
             ))}
+          </select>
+        </div>
+    
+        <div className='grid grid-cols-2 gap-6 flex-grow mt-20'>
+          <div className="w-full h-1/2">
+            <h2 className="text-xl font-semibold mb-4">Course Enrollment Data</h2>
+            <Bar data={courseChartData} options={{ responsive: true }} />
           </div>
-          ) : (
-            <p>No specialization available for this employee.</p>
-          )}
+  
+          <div className="w-full h-1/2">
+            <h2 className="text-xl font-semibold mb-4">Time Spent on Courses</h2>
+            <Bar data={timeSpentChartData} options={{ responsive: true }} />
+          </div>
+  
+          <div className="w-full h-1/2">
+            <h2 className="text-xl font-semibold mb-4">Employee Skills</h2>
+            {employeeSkills.length > 0 ? (
+              <ul>
+                {employeeSkills.map((skill) => (
+                  <li key={skill} className="bg-green-100 text-green-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-2" />
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No skills found for this employee.</p>
+            )}
+          </div>
+    
+          <div className="w-full h-1/2">
+            <h2 className="text-xl font-semibold mb-4">Employee Specialization</h2>
+            {employeeSpecialization.length > 0 ? (
+              <ul>
+                {employeeSpecialization.map((special) => (
+                  <li key={special} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mr-2" />
+                    {special}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No specialization found for this employee.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  
   );
 }

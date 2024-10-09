@@ -10,10 +10,9 @@ router.get('/getSkillScoreStatistics', getSkillScoreStatistics);
 router.get('/top-certifications', getTopThreeEmployees);
 router.get('/top-employee', getTopEmployeeBySkillsetAndAverage);
 // Route to get the count of employees per course
-router.get('/course-count', getCourseCount);
+router.get('/course-count/:employeeId?', getCourseCount); // Optional parameter
+router.get('/time-spent/:employeeId?', getTimeSpentPerCourse); // Optional parameter
 
-// Route to get total time spent per course
-router.get('/time-spent', getTimeSpentPerCourse);
 
 // Route to get all employees and their courses
 router.get('/employee-courses', getEmployeeCourses);

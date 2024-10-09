@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
 import Sidebar from './UI Components/sidebar';
 // import TaskList from './UI components/TaskList';
@@ -30,7 +31,45 @@ function dashboard() {
   const [certifications, setCertifications] = useState([]);
   const [data, setData] = useState([]);
   const notify = (message) => toast(message);
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
+  // Calculate total pages
+  const totalPages = Math.ceil(skillsets.length / itemsPerPage);
+
+  // Get the current items for the page
+  const currentSkillsets = skillsets.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+
+
+  //pagination for Certificate Request
+
+  const [currentCertificationPage, setCurrentCertificationPage] = useState(1);
+  const certificationsPerPage = 6;
+
+  // Calculate total pages
+  const certificationTotalPages = Math.ceil(certifications.length / certificationsPerPage);
+
+  // Get the current items for the page
+  const certificationsForCurrentPage = certifications.slice(
+    (currentCertificationPage - 1) * certificationsPerPage,
+    currentCertificationPage * certificationsPerPage
+  );
+
+  // Handle page change
+  const handleCertificationPageChange = (pageNumber) => {
+    setCurrentCertificationPage(pageNumber);
+  };
 
 
    
@@ -248,35 +287,53 @@ if(role==="user"){
     <Sidebar className=" flex w-1/3 " />
     <ToastContainer/>
     <div className="flex-1 p-4 grid grid-cols-3 gap-4">
-      {data.map((skillDetail) => (
-        <div key={skillDetail.id} className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
-          <div className="font-semibold text-lg text-gray-800 border-b pb-2">Skills:</div>
-          <div className="flex flex-wrap mt-2">
-            {skillDetail.skillSet.map((skill, index) => (
-              <span key={index} className="bg-green-100 text-green-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
-                <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-1" />
-                {skill}
-              </span>
-            ))}
+          {data.length > 0 ? (
+        data.map((skillDetail) => (
+          <div key={skillDetail.id} className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
+            
+            {/* Skills Section */}
+            <div className="font-semibold text-lg text-gray-800 border-b pb-2">Skills:</div>
+            <div className="flex flex-wrap mt-2">
+              {skillDetail.skillSet && skillDetail.skillSet.length > 0 ? (
+                skillDetail.skillSet.map((skill, index) => (
+                  <span key={index} className="bg-green-100 text-green-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-1" />
+                    {skill}
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-600 text-sm">No data available</span>
+              )}
+            </div>
+
+            {/* Specialized Section */}
+            <div className="font-semibold text-lg text-gray-800 mt-4 border-b pb-2">Specialized:</div>
+            <div className="flex flex-wrap mt-2">
+              {skillDetail.specialized && skillDetail.specialized.length > 0 ? (
+                skillDetail.specialized.map((spec, index) => (
+                  <span key={index} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mr-1" />
+                    {spec}
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-600 text-sm">No data available</span>
+              )}
+            </div>
           </div>
-          <div className="font-semibold text-lg text-gray-800 mt-4 border-b pb-2">Specialized:</div>
-          <div className="flex flex-wrap mt-2">
-            {skillDetail.specialized.map((spec, index) => (
-              <span key={index} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
-                <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mr-1" />
-                {spec}
-              </span>
-            ))}
-          </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <div className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">No data available</div>
+      )}
 
 <div className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
-      <div className="font-semibold text-lg text-gray-800 border-b pb-2 flex items-center">
-        <FontAwesomeIcon icon={faBook} className="mr-2 text-gray-600" />
-        Certifications and Departments:
-      </div>
-      <div className="flex flex-col mt-2">
+  <div className="font-semibold text-lg text-gray-800 border-b pb-2 flex items-center">
+    <FontAwesomeIcon icon={faBook} className="mr-2 text-gray-600" />
+    Certifications and Departments:
+  </div>
+  <div className="flex flex-col mt-2">
+    {groupedCertificationsArray && groupedCertificationsArray.length > 0 ? (
+      <>
         {/* Display certifications in a single line */}
         <span className="text-gray-800">
           Certifications: {groupedCertificationsArray.flatMap(group => group.courseNames).join(', ')}
@@ -285,8 +342,12 @@ if(role==="user"){
         <span className="text-gray-700 mt-2">
           Departments: {groupedCertificationsArray.map(group => group.department).join(', ')}
         </span>
-      </div>
-    </div>
+      </>
+    ) : (
+      <span className="text-gray-600">No data available</span>
+    )}
+  </div>
+</div>
 
       
       <div className="bg-gray-200 p-4 rounded-lg shadow-md mb-4 transition-transform duration-200 hover:shadow-lg hover:-translate-y-1">
@@ -300,122 +361,192 @@ if(role==="user"){
       <div className='h-1/2'>
   {/* Displaying request */}
   <div>
-    <h2 className='text-center text-xl font-semibold bg-gray-200 rounded-lg p-2 '>Skill Request Without Certification</h2>
-    {skillsets.length > 0 ? (
-      <div className="overflow-x-auto mt-4">
-        <table className="min-w-full table-auto bg-white rounded-lg shadow-lg">
-          <thead>
-            <tr className="bg-primary-100 text-white border-b">
-              <th className="px-4 py-2 text-left">Skill</th>
-              <th className="px-4 py-2 text-left">Description</th>
-              <th className="px-4 py-2 text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {skillsets.map((skillset) => {
-              let statusColorClass;
-              let statusIcon;
-              
-              switch (skillset.status) {
-                case 'accepted':
-                  statusColorClass = 'bg-green-100 text-green-800';
-                  statusIcon = '✅'; // Check mark icon
-                  break;
-                case 'pending':
-                  statusColorClass = 'bg-yellow-100 text-yellow-800';
-                  statusIcon = '⏳'; // Hourglass icon
-                  break;
-                case 'rejected':
-                  statusColorClass = 'bg-red-100 text-red-800';
-                  statusIcon = '❌'; // Cross mark icon
-                  break;
-                default:
-                  statusColorClass = 'bg-gray-200 text-gray-700';
-                  statusIcon = '❓'; // Question mark icon
-              }
+      <h2 className="text-center text-xl font-semibold bg-gray-200 rounded-lg p-2">
+        Skill Request Without Certification
+      </h2>
+      {skillsets.length > 0 ? (
+        <div className="overflow-x-auto mt-4">
+          <table className="min-w-full table-auto bg-white rounded-lg shadow-lg">
+            <thead>
+              <tr className="bg-primary-100 text-white border-b">
+                <th className="px-4 py-2 text-left">Skill</th>
+                <th className="px-4 py-2 text-left">Description</th>
+                <th className="px-4 py-2 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentSkillsets.map((skillset) => {
+                let statusColorClass;
+                let statusIcon;
 
-              return (
-                <tr key={skillset.id} className="border-b hover:bg-gray-50 transition-colors duration-200">
-                  <td className="px-4 py-2 font-medium">{skillset.skill}</td>
-                  <td className="px-4 py-2 text-gray-700">{skillset.description}</td>
-                  <td className={`px-4 py-2 rounded-lg flex items-center ${statusColorClass}`}>
-                    <span className="mr-2">{statusIcon}</span>
-                    {skillset.status}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    ) : (
-      <p className="mt-4 text-center text-gray-500">No skillsets found for this employee.</p>
-    )}
-  </div>
+                switch (skillset.status) {
+                  case 'accepted':
+                    statusColorClass = 'bg-green-100 text-green-800';
+                    statusIcon = '✅'; // Check mark icon
+                    break;
+                  case 'pending':
+                    statusColorClass = 'bg-yellow-100 text-yellow-800';
+                    statusIcon = '⏳'; // Hourglass icon
+                    break;
+                  case 'rejected':
+                    statusColorClass = 'bg-red-100 text-red-800';
+                    statusIcon = '❌'; // Cross mark icon
+                    break;
+                  default:
+                    statusColorClass = 'bg-gray-200 text-gray-700';
+                    statusIcon = '❓'; // Question mark icon
+                }
+
+                return (
+                  <tr key={skillset.id} className="border-b hover:bg-gray-50 transition-colors duration-200">
+                    <td className="px-4 py-2 font-medium">{skillset.skill}</td>
+                    <td className="px-4 py-2 text-gray-700">{skillset.description}</td>
+                    <td className={`px-4 py-2 rounded-lg flex items-center ${statusColorClass}`}>
+                      <span className="mr-2">{statusIcon}</span>
+                      {skillset.status}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+
+          <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 mx-1 bg-primary-100 text-white rounded disabled:opacity-50 flex items-center"
+          >
+            <FaArrowLeft className="mr-1" />   
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              className={`px-4 py-2 mx-1 rounded ${
+                currentPage === index + 1 ? 'bg-white text-black' : 'bg-gray-300'
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 mx-1 bg-primary-100 text-white rounded disabled:opacity-50 flex items-center"
+          >
+            <FaArrowRight className="ml-1" />
+          </button>
+        </div>
+        </div>
+      ) : (
+        <p className="mt-4 text-center text-gray-500">No skillsets found for this employee.</p>
+      )}
+    </div> 
 </div>
 
 
 
      {/* displaying Request Status */}
-     <div className='h-1/2'>
-  <h2 className='text-center text-xl font-semibold bg-gray-200 rounded-lg p-2'>Skill Request with Certifications</h2>
-  {certifications.length > 0 ? (
-    <div className="overflow-x-auto mt-4">
-      <table className="min-w-full table-auto bg-white rounded-lg shadow-lg">
-        <thead>
-          <tr className="bg-primary-100 text-white border-b">
-            <th className="px-4 py-2 text-left">Course Name</th>
-            <th className="px-4 py-2 text-left">Skills</th>
-            <th className="px-4 py-2 text-left">Department</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Certification Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {certifications.map((certification) => {
-            let statusColorClass;
-            let statusIcon;
-
-            switch (certification.status) {
-              case 'accepted':
-                statusColorClass = 'bg-green-100 text-green-800';
-                statusIcon = '✅'; // Check mark icon
-                break;
-              case 'pending':
-                statusColorClass = 'bg-yellow-100 text-yellow-800';
-                statusIcon = '⏳'; // Hourglass icon
-                break;
-              case 'rejected':
-                statusColorClass = 'bg-red-100 text-red-800';
-                statusIcon = '❌'; // Cross mark icon
-                break;
-              default:
-                statusColorClass = 'bg-gray-200 text-gray-700';
-                statusIcon = '❓'; // Question mark icon
-            }
-
-            return (
-              <tr key={certification.id} className="border-b hover:bg-gray-50 transition-colors duration-200">
-                <td className="px-4 py-2 font-medium">{certification.courseName}</td>
-                <td className="px-4 py-2 text-gray-700">{certification.skills}</td>
-                <td className="px-4 py-2">{certification.courseDepartment}</td>
-                <td className={`px-4 py-2 rounded-lg flex items-center ${statusColorClass}`}>
-                  <span className="mr-2">{statusIcon}</span>
-                  {certification.status}
-                </td>
-                <td className="px-4 py-2">
-                  {new Date(certification.certificationDate).toLocaleDateString()}
-                </td>
+     <div className="h-1/2">
+      <h2 className="text-center text-xl font-semibold bg-gray-200 rounded-lg p-2">
+        Skill Request with Certifications
+      </h2>
+      {certifications.length > 0 ? (
+        <div className="overflow-x-auto mt-4">
+          <table className="min-w-full table-auto bg-white rounded-lg shadow-lg">
+            <thead>
+              <tr className="bg-primary-100 text-white border-b">
+                <th className="px-4 py-2 text-left">Course Name</th>
+                <th className="px-4 py-2 text-left">Skills</th>
+                <th className="px-4 py-2 text-left">Department</th>
+                <th className="px-4 py-2 text-left">Status</th>
+                <th className="px-4 py-2 text-left">Certification Date</th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {certificationsForCurrentPage.map((certification) => {
+                let statusColorClass;
+                let statusIcon;
+
+                switch (certification.status) {
+                  case 'accepted':
+                    statusColorClass = 'bg-green-100 text-green-800';
+                    statusIcon = '✅'; // Check mark icon
+                    break;
+                  case 'pending':
+                    statusColorClass = 'bg-yellow-100 text-yellow-800';
+                    statusIcon = '⏳'; // Hourglass icon
+                    break;
+                  case 'rejected':
+                    statusColorClass = 'bg-red-100 text-red-800';
+                    statusIcon = '❌'; // Cross mark icon
+                    break;
+                  default:
+                    statusColorClass = 'bg-gray-200 text-gray-700';
+                    statusIcon = '❓'; // Question mark icon
+                }
+
+                return (
+                  <tr key={certification.id} className="border-b hover:bg-gray-50 transition-colors duration-200">
+                    <td className="px-4 py-2 font-medium">{certification.courseName}</td>
+                    <td className="px-4 py-2 text-gray-700">{certification.skills}</td>
+                    <td className="px-4 py-2">{certification.courseDepartment}</td>
+                    <td className={`px-4 py-2 rounded-lg flex items-center ${statusColorClass}`}>
+                      <span className="mr-2">{statusIcon}</span>
+                      {certification.status}
+                    </td>
+                    <td className="px-4 py-2">
+                      {new Date(certification.certificationDate).toLocaleDateString()}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          {/* Pagination Controls */}
+          
+        <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={() => handleCertificationPageChange(currentCertificationPage - 1)}
+            disabled={currentCertificationPage === 1}
+            className="px-4 py-2 mx-1 bg-primary-100 rounded text-white disabled:opacity-50 flex items-center"
+          >
+            <FaArrowLeft className="mr-1" /> {/* Left Arrow Icon */}
+          </button>
+          {Array.from({ length: certificationTotalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => handleCertificationPageChange(index + 1)}
+              className={`px-4 py-2 mx-1 rounded ${
+                currentCertificationPage === index + 1
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => handleCertificationPageChange(currentCertificationPage + 1)}
+            disabled={currentCertificationPage === certificationTotalPages}
+            className="px-4 py-2 mx-1 bg-primary-100  text-white rounded  disabled:opacity-50 flex items-center"
+          >
+            <FaArrowRight className="ml-1" /> {/* Right Arrow Icon */}
+          </button>
+        </div>
+        </div>
+      ) : (
+        <p className="mt-4 text-center text-gray-500">
+          No Certification Requests found for this employee.
+        </p>
+      )}
     </div>
-  ) : (
-    <p className="mt-4 text-center text-gray-500">No Certification Requests found for this employee.</p>
-  )}
-</div>
+
+
+
 
 
     {/* Request with certification model */}
@@ -513,7 +644,6 @@ if(role==="user"){
                 </form>
             </div>
              </div>
-            
             </div>
           </div>
         </div>
