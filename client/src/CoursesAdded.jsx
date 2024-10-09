@@ -108,7 +108,7 @@ export default function CoursesAdded() {
   return (
     <div className="flex">
       <Sidebar className="w-1/4" />
-      <div className="grid grid-cols-4 gap-4 h-min p-6">
+      <div className="grid grid-cols-5 gap-2 h-min p-6">
         {courses.length === 0 ? (
           <div className="col-span-4 text-center text-gray-500 text-lg">
             No courses available

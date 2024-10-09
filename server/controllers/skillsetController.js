@@ -79,7 +79,7 @@ const createSkillset = async (req, res) => {
       noOfAttempts: 1, 
     });
 
-    res.status(201).json({ newSkillset, newSkillScore, newEmployeeCourse });
+    res.status(201).json({ newSkillset, newSkillScore });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Error creating skillset', error: error.message });
