@@ -355,6 +355,88 @@ const fetchEmployeeSkills = async (req, res) => {
   }
 };
 
+const getAverageTestScores = async (req, res) => {
+  const { employeeId } = req.params; // Get employeeId from request params
+
+  try {
+    let testScores;
+
+    console.log("Fetching average test scores for employee ID:", employeeId);
+
+    if (employeeId) {
+      // Get average scores for all tests for the specified employee
+      testScores = await prisma.skillScore.groupBy({
+        by: ['testName'], // Group by test name
+        where: {
+          employeeId: employeeId, // Filter by employeeId
+          status: 'accepted', // Only include accepted scores
+        },
+        _avg: {
+          testScore: true, // Calculate the average score
+        },
+      });
+    } else {
+      // Get average scores for all tests for all employees
+      testScores = await prisma.skillScore.groupBy({
+        by: ['testName'], // Group by test name
+        where: {
+          status: 'accepted', // Only include accepted scores
+        },
+        _avg: {
+          testScore: true, // Calculate the average score
+        },
+      });
+    }
+
+    // Check if any scores were found
+    if (testScores.length > 0) {
+      res.status(200).json(testScores);
+    } else {
+      res.status(404).json({ message: 'No accepted scores found.' });
+    }
+  } catch (error) {
+    console.error('Error fetching average test scores:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+const getAcceptedTests = async (req, res) => {
+  const { employeeId } = req.params;
+
+  try {
+    // Determine whether to filter by employeeId
+    const whereCondition = employeeId
+      ? { employeeId: employeeId, status: 'accepted' } // Filter by employeeId if provided
+      : { status: 'accepted' }; // Fetch all accepted tests if no employeeId
+
+    // Fetch accepted tests based on the condition
+    const acceptedTests = await prisma.skillScore.findMany({
+      where: whereCondition,
+      select: {
+        id: true,
+        assessmentId: true,
+        courseName: true,
+        skill: true,
+        courseDepartment: true,
+        testName: true,
+        testScore: true,
+        noOfAttempts: true,
+      },
+    });
+
+    // Check if any tests were found
+    if (acceptedTests.length > 0) {
+      res.json(acceptedTests); // Respond with the accepted tests
+    } else {
+      res.status(404).json({ message: 'No accepted tests found.' }); // Handle case with no tests
+    }
+  } catch (error) {
+    console.error('Error fetching accepted tests:', error);
+    res.status(500).json({ error: 'Failed to fetch accepted tests.' }); // Handle server error
+  }
+};
+
+
 
 
 module.exports = {
@@ -367,5 +449,7 @@ module.exports = {
   getTimeSpentPerCourse,
   getEmployeeCourses,
   getAllEmployees,
-  fetchEmployeeSkills
+  fetchEmployeeSkills,
+  getAverageTestScores,
+  getAcceptedTests
 }

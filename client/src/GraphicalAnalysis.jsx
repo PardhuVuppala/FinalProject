@@ -169,46 +169,46 @@ export default function GraphicalAnalysis() {
           </select>
         </div>
     
-        <div className='grid grid-cols-2 gap-6 flex-grow mt-20'>
-          <div className="w-full h-1/2">
-            <h2 className="text-xl font-semibold mb-4">Course Enrollment Data</h2>
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-6 flex-grow mt-20 p-4'>
+          <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
+            <h2 className="text-lg font-semibold mb-3">Course Enrollment Data</h2>
             <Bar data={courseChartData} options={{ responsive: true }} />
           </div>
   
-          <div className="w-full h-1/2">
-            <h2 className="text-xl font-semibold mb-4">Time Spent on Courses</h2>
+          <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
+            <h2 className="text-lg font-semibold mb-3">Time Spent on Courses</h2>
             <Bar data={timeSpentChartData} options={{ responsive: true }} />
           </div>
   
-          <div className="w-full h-1/2">
-            <h2 className="text-xl font-semibold mb-4">Employee Skills</h2>
+          <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
+            <h2 className="text-lg font-semibold mb-3">Employee Skills</h2>
             {employeeSkills.length > 0 ? (
-              <ul>
+              <ul className="flex flex-wrap">
                 {employeeSkills.map((skill) => (
                   <li key={skill} className="bg-green-100 text-green-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-2" />
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-1" />
                     {skill}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p>No skills found for this employee.</p>
+              <p className="text-gray-500">No skills found for this employee.</p>
             )}
           </div>
     
-          <div className="w-full h-1/2">
-            <h2 className="text-xl font-semibold mb-4">Employee Specialization</h2>
+          <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
+            <h2 className="text-lg font-semibold mb-3">Employee Specialization</h2>
             {employeeSpecialization.length > 0 ? (
-              <ul>
+              <ul className="flex flex-wrap">
                 {employeeSpecialization.map((special) => (
                   <li key={special} className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 mb-2 px-2.5 py-1 rounded-lg flex items-center">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mr-2" />
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mr-1" />
                     {special}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p>No specialization found for this employee.</p>
+              <p className="text-gray-500">No specialization found for this employee.</p>
             )}
           </div>
         </div>

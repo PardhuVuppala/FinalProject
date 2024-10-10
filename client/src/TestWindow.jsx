@@ -133,9 +133,15 @@ const TestWindow = () => {
       setError('Failed to update score. Please try again later.');
     }
 
+    // Exit fullscreen
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+
     // Start the post-submit countdown
     startCountdown();
-  };
+};
+
 
   const startCountdown = () => {
     const countdownInterval = setInterval(() => {

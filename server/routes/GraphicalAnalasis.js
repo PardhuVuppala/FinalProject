@@ -1,5 +1,5 @@
 const express = require('express');
-const { getCourseStatistics,getSkillStatistics,getSkillScoreStatistics,getTopThreeEmployees,getTopEmployeeBySkillsetAndAverage, getCourseCount, getTimeSpentPerCourse,getEmployeeCourses,getAllEmployees ,fetchEmployeeSkills} = require("../controllers/GraphicalAnalasis")
+const { getCourseStatistics,getSkillStatistics,getSkillScoreStatistics,getTopThreeEmployees,getTopEmployeeBySkillsetAndAverage, getAcceptedTests,getCourseCount, getTimeSpentPerCourse,getEmployeeCourses,getAllEmployees ,fetchEmployeeSkills,getAverageTestScores} = require("../controllers/GraphicalAnalasis")
 
 const router = express.Router();
 
@@ -20,6 +20,9 @@ router.get('/employee-courses', getEmployeeCourses);
 router.get('/employees', getAllEmployees);
 
 router.get('/skills/:employeeId', fetchEmployeeSkills);
+router.get('/average/:employeeId?', getAverageTestScores);
+
+router.get('/accepted-tests/:employeeId?', getAcceptedTests);
 
 
 

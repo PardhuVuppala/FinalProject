@@ -12,7 +12,7 @@ function TestAcceptreject() {
   const [role, setRole] = useState("");
   const [skillScores, setSkillScores] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(13); // Change this to the desired number of items per page
+  const [itemsPerPage] = useState(10); // Change this to the desired number of items per page
   const totalPages = Math.ceil(skillScores.length / itemsPerPage);
 
   const notify = (message) => toast(message);
