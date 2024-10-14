@@ -211,6 +211,10 @@ function dashboard() {
           const response = await axios.post('http://localhost:1200/newskill/skillsets', data);
           console.log('Skillset created:', response.data);
           notify("Skillset Request Added")
+          setTimeout(()=>
+          {
+            location.reload()
+          },4000)
         } 
         catch (error) {
           if (error.response && error.response.status === 400) {
@@ -252,7 +256,11 @@ function dashboard() {
   
       if (response.status === 201) {
         console.log('Certification added:', response.data);
-        notify("Certification added successfully!"); // Notify on success
+        notify("Certification request  added successfully!"); // Notify on success
+        setTimeout(()=>
+          {
+            location.reload()
+          },4000)
       } else {
         console.error('Error adding certification:', response.data);
       }
@@ -332,20 +340,23 @@ if(role==="user"){
     Certifications and Departments:
   </div>
   <div className="flex flex-col mt-2">
-    {groupedCertificationsArray && groupedCertificationsArray.length > 0 ? (
-      <>
-        {/* Display certifications in a single line */}
-        <span className="text-gray-800">
-          Certifications: {groupedCertificationsArray.flatMap(group => group.courseNames).join(', ')}
-        </span>
-        {/* Display departments in a single line */}
-        <span className="text-gray-700 mt-2">
-          Departments: {groupedCertificationsArray.map(group => group.department).join(', ')}
-        </span>
-      </>
-    ) : (
-      <span className="text-gray-600">No data available</span>
-    )}
+  {groupedCertificationsArray && groupedCertificationsArray.length > 0 ? (
+  <div className="flex flex-col space-y-2">
+    {/* Display certifications in a single line */}
+    <span className="bg-blue-100 text-blue-800 p-2 rounded">
+      <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mr-1" aria-label="Certification icon" />
+      Certifications: {groupedCertificationsArray.flatMap(group => group.courseNames).join(', ')}
+    </span>
+    {/* Display departments in a single line */}
+    <span className="bg-green-100 text-green-800 p-2 rounded">
+      <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-1" aria-label="Department icon" />
+      Departments: {groupedCertificationsArray.map(group => group.department).join(', ')}
+    </span>
+  </div>
+) : (
+  <span className="text-gray-600">No data available</span>
+)}
+
   </div>
 </div>
 
@@ -713,7 +724,7 @@ if(role==="user"){
                       <option value="MongoDB">MongoDB</option>
                       <option value="AWS">AWS</option>
                       <option value="Azure">Azure</option>
-                      <option value="Azure">Express</option>
+                      <option value="Express">Express</option>
                       <option value="Node js">Node js</option>
                       <option value="Data Structures and Algorithms">Data Structures and Algorithms</option>
 

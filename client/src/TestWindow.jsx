@@ -134,9 +134,7 @@ const TestWindow = () => {
     }
 
     // Exit fullscreen
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    }
+
 
     // Start the post-submit countdown
     startCountdown();
@@ -148,6 +146,9 @@ const TestWindow = () => {
       setCountdown(prevCountdown => {
         if (prevCountdown === 1) {
           clearInterval(countdownInterval);
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          }
           navigate('/SkillTest'); // Auto navigate after 10 seconds
         }
         return prevCountdown - 1;

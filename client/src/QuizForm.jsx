@@ -157,13 +157,13 @@ const AssessmentForm = () => {
             <button
               type="button"
               onClick={handleAddQuestion}
-              className="mb-4 bg-blue-600 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mb-4 bg-primary-100 text-white py-2 px-4 rounded-md shadow-md hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-100"
             >
               Add Question
             </button>
             <button
               type="submit"
-              className="bg-green-600 text-white py-2 px-4 rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="bg-green-600 text-white py-2 px-4 rounded-md shadow-md ml-1 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               Create Assessment
             </button>

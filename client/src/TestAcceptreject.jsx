@@ -133,7 +133,7 @@ function TestAcceptreject() {
                               {score.noOfAttempts === 0 && score.status === 'pending' ? (
                                 <>
                                   <button
-                                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
+                                    className="bg-primary-100 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out"
                                     onClick={() => handleAccept(score.id, score.skill, score.employeeId, score.courseDepartment)}
                                   >
                                     Accept

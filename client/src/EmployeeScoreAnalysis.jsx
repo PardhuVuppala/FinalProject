@@ -68,7 +68,7 @@ export default function EmployeeScoreAnalysis() {
     labels: averageScores.map(score => score.testName), // Extract test names for labels
     datasets: [
       {
-        label: 'Average Score',
+        label: 'Score',
         data: averageScores.map(score => score._avg.testScore), // Extract average scores for data
         backgroundColor: 'rgba(75, 192, 192, 0.5)', // Set bar color
         borderColor: 'rgba(75, 192, 192, 1)',
@@ -115,23 +115,23 @@ export default function EmployeeScoreAnalysis() {
 
         {/* Render chart for average scores */}
         <div className="h-96">
-          <h3 className="text-lg font-semibold mb-4">Average Test Scores</h3>
+          <h3 className="text-lg font-semibold mb-4">Test Scores</h3>
           {averageScores.length > 0 ? (
             <Bar data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
           ) : (
-            <p>No average scores available.</p>
+            <p>No scores available.</p>
           )}
         </div>
 
         {/* Table for average scores */}
         <div className="mt-9">
-          <h3 className="text-lg font-semibold mb-4">Average Scores Table</h3>
+          <h3 className="text-lg font-semibold mb-4">Scores Table</h3>
           {currentScores.length > 0 ? (
             <table className="min-w-full border border-gray-300 bg-white shadow-md rounded-lg overflow-hidden">
             <thead className="bg-primary-100">
               <tr className="text-left text-white uppercase text-sm font-semibold">
                 <th className="border px-4 py-2">Test Name</th>
-                <th className="border px-4 py-2">Average Score</th>
+                <th className="border px-4 py-2">Score</th>
                 <th className="border px-4 py-2">No of Attempts Left</th>
               </tr>
             </thead>

@@ -482,7 +482,7 @@ const FormSubmit = async(e) =>
               </div>
             </div>
             <div className='relative w-full md:w-[400px]'>
-              <img src={Limage} alt="Background" className='w-full h-full rounded-r-2xl md:block object-cover' />
+              <img src="https://www.cabem.com/wp-content/uploads/2022/05/Competency-The-Big-3.jpg" alt="Background" className='w-full h-full rounded-r-2xl md:block object-cover' />
             </div>
           </div>
         </div>
