@@ -8,7 +8,7 @@ export default function Login() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isotpModelOpen,setOtpMOdelOPen] = useState(false)
   const [Email,setEmail] = useState("");
-  const[otp,setotp] = useState("");
+  const [otp, setOtp] = useState(["", "", "", ""]);
   const[recivedOtp,setrecivedOTP] = useState("");
   const[isModelPassword,setModelPassword] = useState(false);
   const [Password,setPassword] = useState("");
@@ -27,6 +27,28 @@ export default function Login() {
     setEmail("");
     
   };
+
+
+  const handleChangeOTP = (element, index) => {
+    const value = element.target.value;
+    if (/^[0-9]$/.test(value) || value === "") {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      // Automatically move to the next input box
+      if (value && index < 3) {
+        document.getElementById(`otp-${index + 1}`).focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      document.getElementById(`otp-${index - 1}`).focus();
+    }
+  };
+
 
 
   const onPasswordForm = async(e) =>{
@@ -74,7 +96,8 @@ export default function Login() {
   const OTPSubmit = async(e)=>
 { 
     e.preventDefault();
-    if(otp===recivedOtp)
+    const sotp = otp.join('');
+    if(sotp===recivedOtp)
     { 
       notify("OTP Verified");
       setTimeout(() => {
@@ -95,7 +118,7 @@ export default function Login() {
     setEmail("");
     setPassword("");
     setrePassword("");
-    setotp("");
+    setOtp(["", "", "", ""]);
 
   }
    
@@ -186,6 +209,7 @@ const FormSubmit = async(e) =>
   try{
   e.preventDefault();
   const body = {Email}
+  console.log(Email)
   Cookies.set('email',Email,{expires:1});
   const response = await fetch("http://localhost:1200/Employee/otp-verify",
   {
@@ -382,9 +406,23 @@ const FormSubmit = async(e) =>
                     <input type="email" name="email" id="email"  className="block w-full  bg-textbg rounded-md box-border border-0 px-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 mt-1.5 placeholder:text-gray-400 focus:ring-2 pl-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"    value={Email} onChange={(e)=>setEmail(e.target.value)} required />
                     </div>
                     <div>
-                    <span className='mb-2 text-md'>OTP</span>
-                    <input type="text" name="otp" id="otp" className="block w-full  bg-textbg rounded-md box-border border-0 px-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 mt-1.5 placeholder:text-gray-400 focus:ring-2 pl-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"   value={otp} onChange={(e)=>setotp(e.target.value)} required />
-                    </div>
+                    <span className='mb-4 text-md'>OTP</span>
+                    <div className="flex space-x-4 mt-2"> {otp.map((digit, index) => (
+                      
+                        <input
+                          key={index}
+                          id={`otp-${index}`}
+                          type="text"
+                          name={`otp-${index}`}
+                          maxLength="1"
+                          className="block w-12 bg-textbg rounded-md text-center box-border border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                          value={digit}
+                          onChange={(e) => handleChangeOTP(e, index)}
+                          onKeyDown={(e) => handleKeyDown(e, index)}
+                          required
+                        />
+                      ))}      
+                      </div>              </div>
                     <button type="submit" className="w-full bg-primary-100 text-white py-2 px-1 rounded-lg mb-2 hover:border-gray-300 mt-2">Verify OTP</button>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
                     </div>

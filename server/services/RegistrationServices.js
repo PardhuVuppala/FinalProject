@@ -5,15 +5,15 @@ const transporter = nodemailer.createTransport({
     port: 587, 
     secure: false, 
     auth: {
-        user: 'pardhuvuppala',
-        pass: "vrglfejbdissytzl" 
+        user: 'pardhuvuppala890',
+        pass: "qjscfvdybdfhfcev" 
     }
 });
 
 const sendMail = async (to, subject, text) => {
     try {
         const info = await transporter.sendMail({
-            from: `"Task Management Website" <${process.env.EMAIL_USER}>`, 
+            from: `"Management Website"`, 
             to, 
             subject,
             text 

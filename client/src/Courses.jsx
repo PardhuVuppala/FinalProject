@@ -5,9 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from "js-cookie";
 import axios from 'axios';
 
-
-
-
 export default function Courses() {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -15,7 +12,6 @@ export default function Courses() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
 
 
   useEffect(() => {

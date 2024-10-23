@@ -96,7 +96,9 @@ const loginEmployee = async (req, res) => {
 
 const otpVerify = async (req, res) => {
   try {
-    const { employeeEmail:email } = req.body;
+    const { Email } = req.body;
+    const employeeEmail = Email
+    //console.log(employeeEmail)
     const check = await EmployeeModel.FindEmployeeForOtp(employeeEmail);
     if (check) {
       const otp = randomize('0', 4);

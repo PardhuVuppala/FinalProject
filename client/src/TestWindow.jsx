@@ -68,12 +68,12 @@ const TestWindow = () => {
     verifyToken();
     fetchExamQuestions();
     
-    // Timer logic for the entire test
+
     const testTimer = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime === 1) {
           clearInterval(testTimer);
-          handleSubmit(); // Auto-submit when time runs out
+          handleSubmit(); 
         }
         return prevTime - 1;
       });
@@ -133,10 +133,7 @@ const TestWindow = () => {
       setError('Failed to update score. Please try again later.');
     }
 
-    // Exit fullscreen
 
-
-    // Start the post-submit countdown
     startCountdown();
 };
 
@@ -149,7 +146,7 @@ const TestWindow = () => {
           if (document.fullscreenElement) {
             document.exitFullscreen();
           }
-          navigate('/SkillTest'); // Auto navigate after 10 seconds
+          navigate('/SkillTest');
         }
         return prevCountdown - 1;
       });
@@ -166,85 +163,86 @@ const TestWindow = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{testName}</h1>
-      
-      {/* Display the time left for the entire test */}
-      <div className="mb-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
-        <h2 className="font-semibold text-lg">Time Left: {formatTime(timeLeft)} <span className='text-red-500'>Don't use Esc or Exit from Window if you do automatically submits</span></h2>
-      </div>
+    <div className="container mx-auto p-6">
+  <h1 className="text-4xl font-bold mb-8 text-center text-gray-900">{testName}</h1>
 
-      {!results ? (
+  <div className="mb-8 p-4 border border-gray-300 rounded-lg shadow-lg bg-gray-50">
+    <h2 className="font-semibold text-2xl text-gray-800">Time Left: {formatTime(timeLeft)}</h2>
+    <p className="text-red-600 mt-2">
+      <strong>Important:</strong> Don't use Esc or exit the window; doing so will automatically submit your test.
+    </p>
+  </div>
+
+  {!results ? (
+    <div>
+      {questions.length > 0 ? (
         <div>
-          {questions.length > 0 ? (
-            <div>
-              {questions.map((question, index) => (
-                <div key={index} className="mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
-                  <h2 className="font-semibold mb-4 text-lg">{index + 1}. {question.Question}</h2>
-                  <div className="flex flex-col space-y-2">
-                    {question.Options.map((option, idx) => (
-                      <label key={idx} className="flex items-center cursor-pointer p-2 rounded transition-colors duration-200 
-                          bg-gray-100 hover:bg-blue-100 
-                          ${selectedAnswers[index] === option ? 'bg-blue-200' : 'bg-white'}
-                      ">
-                        <input
-                          type="radio"
-                          name={`question-${index}`}
-                          value={option}
-                          onChange={() => handleAnswerSelect(index, option)}
-                          checked={selectedAnswers[index] === option}
-                          className="hidden"
-                        />
-                        <span className={`flex items-center justify-center w-5 h-5 rounded-full border border-gray-400 
-                          ${selectedAnswers[index] === option ? 'bg-primary-100' : 'bg-white'}
-                        `}></span>
-                        <span className="ml-2">{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              <button
-                onClick={handleSubmit}
-                className="bg-primary-100 text-white px-4 py-2 rounded mt-4 transition duration-200"
-              >
-                Submit Test
-              </button>
-            </div>
-          ) : (
-            <p>No questions found for this test.</p>
-          )}
-        </div>
-      ) : (
-        <div>
-          <h2 className="text-xl font-bold mb-4">Results:</h2>
-          {results.map((result, index) => (
-            <div key={index} className="mb-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
-              <h3 className="font-semibold mb-2">{index + 1}. {result.question}</h3>
-              <p><strong>Your Answer:</strong> {result.userAnswer || 'No answer selected'}</p>
-              <p><strong>Correct Answer:</strong> {result.correctAnswer}</p>
-              <p className={result.isCorrect ? 'text-green-500' : 'text-red-500'}>
-                {result.isCorrect ? 'Correct' : 'Incorrect'}
-              </p>
+          {questions.map((question, index) => (
+            <div key={index} className="mb-6 p-6 border border-gray-300 rounded-lg shadow-lg bg-white">
+              <h2 className="font-semibold mb-4 text-xl text-gray-800">{index + 1}. {question.Question}</h2>
+              <div className="flex flex-col space-y-4">
+                {question.Options.map((option, idx) => (
+                  <label key={idx} className={`flex items-center cursor-pointer p-4 rounded-lg transition-colors duration-200 
+                          ${selectedAnswers[index] === option ? 'bg-blue-100 border-primary-100' : 'bg-gray-100 border-transparent'} 
+                          border-2 hover:bg-blue-200`}>
+                    <input
+                      type="radio"
+                      name={`question-${index}`}
+                      value={option}
+                      onChange={() => handleAnswerSelect(index, option)}
+                      checked={selectedAnswers[index] === option}
+                      className="hidden"
+                    />
+                    <span className={`flex items-center justify-center w-6 h-6 rounded-full border-2 
+                          ${selectedAnswers[index] === option ? 'bg-primary-100 border-primary-100' : 'bg-white border-gray-400'}`}>
+                    </span>
+                    <span className="ml-4 text-gray-700">{option}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           ))}
-          <div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
-            <h3 className="text-lg font-bold">Your Total Score: {score} / {questions.length * 5}</h3>
-          </div>
-
-          {/* Display the button and countdown */}
-          <div className="mt-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
-            <button
-              onClick={() => navigate('/SkillTest')}
-              className="bg-primary-100 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
-            >
-              View Tests
-            </button>
-            <p className="mt-2">Redirecting in {countdown} seconds...</p>
-          </div>
+          <button
+            onClick={handleSubmit}
+            className="bg-primary-100 text-white px-6 py-3 rounded-lg mt-6 transition duration-200  focus:outline-none focus:ring-2  focus:ring-opacity-50"
+          >
+            Submit Test
+          </button>
         </div>
+      ) : (
+        <p className="text-lg text-gray-600">No questions found for this test.</p>
       )}
     </div>
+  ) : (
+    <div>
+      <h2 className="text-3xl font-bold mb-6">Results:</h2>
+      {results.map((result, index) => (
+        <div key={index} className="mb-6 p-6 border border-gray-300 rounded-lg shadow-lg bg-white">
+          <h3 className="font-semibold mb-2 text-xl">{index + 1}. {result.question}</h3>
+          <p><strong>Your Answer:</strong> {result.userAnswer || 'No answer selected'}</p>
+          <p><strong>Correct Answer:</strong> {result.correctAnswer}</p>
+          <p className={result.isCorrect ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
+            {result.isCorrect ? 'Correct' : 'Incorrect'}
+          </p>
+        </div>
+      ))}
+      <div className="mt-6 p-6 border border-gray-300 rounded-lg shadow-lg bg-white">
+        <h3 className="text-xl font-bold">Your Total Score: {score} / {questions.length * 5}</h3>
+      </div>
+
+      <div className="mt-8 p-6 border border-gray-300 rounded-lg shadow-lg bg-white">
+        <button
+          onClick={() => navigate('/SkillTest')}
+          className="bg-primary-100 text-white px-6 py-3 rounded-lg  transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+        >
+          View Tests
+        </button>
+        <p className="mt-2 text-gray-600">Redirecting in {countdown} seconds...</p>
+      </div>
+    </div>
+  )}
+</div>
+
   );
 };
 
