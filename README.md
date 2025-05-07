@@ -72,16 +72,16 @@ Follow these steps to set up and deploy the ADF templates for data ingestion:
  
 ## 🛠️ **Supported Tools**
  
-* [x] ADF (Azure Data Factory)
+ [x] ADF (Azure Data Factory)
  
 ## 🏁 **Supported Destination**
  
-* [x] Azure SQL 🗄️
+ [x] Azure SQL 🗄️
  
 ## Files supported
  
-* [x] CSV 📊
-* [x] JSON 🗂️
+ [x] CSV 📊
+ [x] JSON 🗂️
  
  
  
